@@ -9,7 +9,7 @@ export const themeConfig = {
     // 站点logo
     logo: "/images/logo/logo.webp",
     // 站点地址
-    site: "#",
+    site: "https://example.com",
     // 语言
     lang: "zh-CN",
     // 反馈表单地址（集中管理）
@@ -405,12 +405,19 @@ export const themeConfig = {
     // playlist / album / song
     type: "playlist",
   },
-  // 搜索
-  // https://www.algolia.com/
+  // 本地搜索
   search: {
-    enable: false,
-    appId: "",
-    apiKey: "",
+    enable: true,
+    provider: "local",
+    options: {
+      miniSearch: {
+        searchOptions: {
+          fuzzy: 0.2,
+          prefix: true,
+          boost: { title: 4, text: 2, titles: 1 },
+        },
+      },
+    },
   },
   // 打赏
   rewardData: {

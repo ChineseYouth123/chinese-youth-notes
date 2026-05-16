@@ -41,7 +41,7 @@ const getAllTitle = () => {
     postDom.value = document.getElementById("page-content");
     if (!postDom.value) return false;
     // 所有标题
-    const headers = Array.from(postDom.value.querySelectorAll("h2, h3")).filter(
+    const headers = Array.from(postDom.value.querySelectorAll("h1, h2, h3")).filter(
       (header) => header.parentElement.tagName.toLowerCase() === "div",
     );
     return headers;

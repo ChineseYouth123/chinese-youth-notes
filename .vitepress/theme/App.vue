@@ -60,7 +60,7 @@ import { calculateScroll, specialDayGray, smoothScrolling } from "@/utils/helper
 const route = useRoute();
 const store = mainStore();
 const { frontmatter, page, theme } = useData();
-const { loadingStatus, footerIsShow, themeValue, themeType, backgroundType, fontFamily, fontSize, scrollData } =
+const { loadingStatus, footerIsShow, themeValue, themeType, backgroundType, fontFamily, fontSize, scrollData, mdIndent, mdTitleAlign } =
   storeToRefs(store);
 
 // 右键菜单
@@ -144,6 +144,17 @@ const changeSiteFont = () => {
   }
 };
 
+// 切换文章预览样式
+const changeMdPreviewStyle = () => {
+  const htmlElement = document.documentElement;
+  htmlElement.classList.remove("md-indent-none", "md-indent-2", "md-indent-4");
+  htmlElement.classList.remove("md-title-left", "md-title-center");
+  if (mdIndent.value !== "none") {
+    htmlElement.classList.add("md-indent-" + mdIndent.value);
+  }
+  htmlElement.classList.add("md-title-" + mdTitleAlign.value);
+};
+
 // 监听设置变化
 watch(
   () => [themeType.value, backgroundType.value],
@@ -152,6 +163,10 @@ watch(
 watch(
   () => fontFamily.value,
   () => changeSiteFont(),
+);
+watch(
+  () => [mdIndent.value, mdTitleAlign.value],
+  () => changeMdPreviewStyle(),
 );
 
 onMounted(() => {
@@ -162,6 +177,8 @@ onMounted(() => {
   changeSiteThemeType();
   // 切换系统字体样式
   changeSiteFont();
+  // 切换文章预览样式
+  changeMdPreviewStyle();
   // 滚动监听
   window.addEventListener("scroll", calculateScroll);
   // 右键监听

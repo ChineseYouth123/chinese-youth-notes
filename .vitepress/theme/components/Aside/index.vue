@@ -1,20 +1,25 @@
 <template>
   <aside class="main-aside">
-    <Hello v-if="theme.aside.hello.enable" class="weidgets" />
-    <div class="sticky">
-      <Toc v-if="theme.aside.toc.enable && showToc" class="weidgets" />
-      <Countdown class="weidgets" />
-      <Tags v-if="theme.aside.tags.enable" class="weidgets" />
-      <SiteData v-if="theme.aside.siteData.enable" class="weidgets" />
-    </div>
+    <!-- 正文页面：仅显示目录 -->
+    <template v-if="onlyToc">
+      <Toc class="weidgets" />
+    </template>
+    <!-- 普通页面：显示侧边栏组件 -->
+    <template v-else>
+      <Hello v-if="theme.aside.hello.enable" class="weidgets" />
+      <div class="sticky">
+        <Countdown class="weidgets" />
+        <Tags v-if="theme.aside.tags.enable" class="weidgets" />
+        <SiteData v-if="theme.aside.siteData.enable" class="weidgets" />
+      </div>
+    </template>
   </aside>
 </template>
 
 <script setup>
 const { theme } = useData();
-const props = defineProps({
-  // 显示目录
-  showToc: {
+defineProps({
+  onlyToc: {
     type: Boolean,
     default: false,
   },
@@ -27,6 +32,12 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   animation: fade-up 0.6s 0.3s backwards;
+  &:has(> .weidgets:only-child) {
+    :deep(.toc) {
+      position: sticky;
+      top: calc(60px + 1rem);
+    }
+  }
   .weidgets {
     padding: 18px;
     margin-bottom: 1rem;

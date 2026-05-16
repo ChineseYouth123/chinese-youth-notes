@@ -94,6 +94,47 @@
             </span>
           </div>
         </div>
+        <span class="title">文章预览</span>
+        <div class="set-item">
+          <span class="set-label">段落首行缩进</span>
+          <div class="set-options">
+            <span
+              :class="['options', { choose: mdIndent === 'none' }]"
+              @click="mdIndent = 'none'"
+            >
+              无缩进
+            </span>
+            <span
+              :class="['options', { choose: mdIndent === '2' }]"
+              @click="mdIndent = '2'"
+            >
+              2
+            </span>
+            <span
+              :class="['options', { choose: mdIndent === '4' }]"
+              @click="mdIndent = '4'"
+            >
+              4
+            </span>
+          </div>
+        </div>
+        <div class="set-item">
+          <span class="set-label">标题对齐</span>
+          <div class="set-options">
+            <span
+              :class="['options', { choose: mdTitleAlign === 'left' }]"
+              @click="mdTitleAlign = 'left'"
+            >
+              左对齐
+            </span>
+            <span
+              :class="['options', { choose: mdTitleAlign === 'center' }]"
+              @click="mdTitleAlign = 'center'"
+            >
+              居中对齐
+            </span>
+          </div>
+        </div>
         <span class="title">杂项调整</span>
         <div class="set-item">
           <span class="set-label">额外信息显示位置</span>
@@ -122,7 +163,7 @@ import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 
 const store = mainStore();
-const { themeType, fontFamily, fontSize, infoPosition, backgroundType, backgroundUrl, bannerType } =
+const { themeType, fontFamily, fontSize, infoPosition, backgroundType, backgroundUrl, bannerType, mdIndent, mdTitleAlign } =
   storeToRefs(store);
 </script>
 

@@ -52,6 +52,10 @@ export const mainStore = defineStore("main", {
       // 站点背景
       backgroundType: "patterns",
       backgroundUrl: "https://tuapi.eees.cc/api.php?category={dongman,fengjing}&type=302",
+      // 文章预览缩进
+      mdIndent: "none",
+      // 文章标题对齐
+      mdTitleAlign: "left",
     };
   },
   getters: {},
@@ -125,6 +129,8 @@ export const mainStore = defineStore("main", {
         "fontSize",
         "infoPosition",
         "backgroundUrl",
+        "mdIndent",
+        "mdTitleAlign",
       ],
     },
   ],

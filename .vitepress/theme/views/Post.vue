@@ -93,7 +93,7 @@
         <!-- 评论 -->
         <Comments ref="commentRef" />
       </article>
-      <Aside showToc />
+      <Aside only-toc />
     </div>
   </div>
 </template>

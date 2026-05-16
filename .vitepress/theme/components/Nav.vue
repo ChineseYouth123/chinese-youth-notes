@@ -4,26 +4,7 @@
       <div class="nav-all">
         <!-- 导航栏左侧 -->
         <div class="left-nav">
-          <div class="more-menu nav-btn" title="更多内容">
-            <i class="iconfont icon-menu" />
-            <div class="more-card s-card">
-              <div v-for="(item, index) in theme.navMore" :key="index" class="more-item">
-                <span class="more-name">{{ item.name }}</span>
-                <div class="more-list">
-                  <a
-                    v-for="(link, i) in item.list"
-                    :key="i"
-                    :href="link.url"
-                    class="more-link"
-                    target="_blank"
-                  >
-                    <img class="link-icon" :src="link.icon" :alt="link.name" />
-                    <span class="link-name">{{ link.name }}</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+    
           <div class="site-name" @click="router.go('/')">
             {{ site.title }}
           </div>
@@ -51,23 +32,23 @@
           </span>
         </div>
         <div class="right-nav">
-          <!-- 开往 -->
-          <a
+          <!-- 跳转 -->
+          <!-- <a
             class="menu-btn nav-btn travellings"
-            title="开往-友链接力"
+            title="跳转"
             href="https://www.travellings.cn/go.html"
             target="_blank"
           >
             <i class="iconfont icon-subway"></i>
-          </a>
+          </a> -->
           <!-- 随机文章 -->
-          <div
+          <!-- <div
             class="menu-btn nav-btn"
             title="随机前往一篇文章"
             @click="router.go(shufflePost(theme.postData))"
           >
             <i class="iconfont icon-shuffle"></i>
-          </div>
+          </div> -->
           <!-- 搜索 -->
           <div
             v-if="theme.search.enable"
@@ -102,6 +83,28 @@
             @click="store.changeShowStatus('mobileMenuShow')"
           >
             <i class="iconfont icon-toc" />
+          </div>
+
+          <!-- 更多内容 -->
+          <div class="more-menu nav-btn" title="更多内容">
+            <i class="iconfont icon-menu" />
+            <div class="more-card s-card">
+              <div v-for="(item, index) in theme.navMore" :key="index" class="more-item">
+                <span class="more-name">{{ item.name }}</span>
+                <div class="more-list">
+                  <a
+                    v-for="(link, i) in item.list"
+                    :key="i"
+                    :href="link.url"
+                    class="more-link"
+                    target="_blank"
+                  >
+                    <img class="link-icon" :src="link.icon" :alt="link.name" />
+                    <span class="link-name">{{ link.name }}</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -198,75 +201,6 @@ const { site, theme, frontmatter, page } = useData();
       flex-direction: row;
       align-items: center;
       min-width: 200px;
-      .more-menu {
-        position: relative;
-        margin-right: 4px;
-        @media (max-width: 512px) {
-          display: none;
-        }
-        .more-card {
-          position: absolute;
-          left: 0;
-          top: 46px;
-          opacity: 0;
-          visibility: hidden;
-          transform-origin: left top;
-          transform: scale(0.8) translateY(-5px);
-          .more-item {
-            margin-top: 0.8rem;
-            &:first-child {
-              margin-top: 0;
-            }
-            .more-name {
-              font-size: 14px;
-              display: inline-block;
-              color: var(--main-font-second-color);
-              margin-bottom: 0.6rem;
-            }
-            .more-list {
-              display: grid;
-              gap: 0.8rem;
-              grid-template-columns: 1fr 1fr;
-              .more-link {
-                display: flex;
-                align-items: center;
-                width: 150px;
-                padding: 6px 8px;
-                border-radius: 8px;
-                .link-icon {
-                  width: 24px;
-                  height: 24px;
-                  border-radius: 50%;
-                  margin-right: 8px;
-                }
-                &:hover {
-                  color: var(--main-card-background);
-                  background-color: var(--main-color);
-                }
-              }
-            }
-          }
-          &::after {
-            content: "";
-            position: absolute;
-            top: -20px;
-            left: 0;
-            width: 100%;
-            height: 30px;
-            z-index: 1;
-          }
-          &:hover {
-            border-color: var(--main-color);
-          }
-        }
-        &:hover {
-          .more-card {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            visibility: visible;
-          }
-        }
-      }
       .site-name {
         position: relative;
         display: flex;
@@ -504,6 +438,76 @@ const { site, theme, frontmatter, page } = useData();
       justify-content: flex-end;
       align-items: center;
       min-width: 200px;
+      .more-menu {
+        position: relative;
+        margin-right: 4px;
+        @media (max-width: 512px) {
+          display: none;
+        }
+        .more-card {
+          position: absolute;
+          right: 0;
+          top: 46px;
+          opacity: 0;
+          visibility: hidden;
+          transform-origin: left top;
+          transform: scale(0.8) translateY(-5px);
+          .more-item {
+            margin-top: 0.8rem;
+            &:first-child {
+              margin-top: 0;
+            }
+            .more-name {
+              font-size: 14px;
+              display: inline-block;
+              color: var(--main-font-second-color);
+              margin-bottom: 0.6rem;
+            }
+            .more-list {
+              display: grid;
+              gap: 0.8rem;
+              grid-template-columns: 1fr 1fr;
+              .more-link {
+                display: flex;
+                align-items: center;
+                width: 150px;
+                padding: 6px 8px;
+                border-radius: 8px;
+                .link-icon {
+                  width: 24px;
+                  height: 24px;
+                  border-radius: 50%;
+                  margin-right: 8px;
+                }
+                &:hover {
+                  color: var(--main-card-background);
+                  background-color: var(--main-color);
+                }
+              }
+            }
+          }
+          &::after {
+            content: "";
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            z-index: 1;
+          }
+          &:hover {
+            border-color: var(--main-color);
+          }
+        }
+        &:hover {
+          .more-card {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            visibility: visible;
+          }
+        }
+      }
+
       .menu-btn {
         margin-left: 0.5rem;
         &.mobile {
