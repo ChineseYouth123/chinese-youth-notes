@@ -1,23 +1,28 @@
 <template>
-  <aside class="main-aside">
-    <!-- 正文页面：仅显示目录 -->
-    <template v-if="onlyToc">
+  <!-- 正文页面（仅目录），随 tocShow 销毁/重建 -->
+  <template v-if="onlyToc">
+    <aside v-if="store.tocShow" class="main-aside">
       <Toc class="weidgets" />
-    </template>
-    <!-- 普通页面：显示侧边栏组件 -->
-    <template v-else>
+    </aside>
+  </template>
+  <!-- 普通页面：显示侧边栏组件 + 目录 -->
+  <template v-else>
+    <aside class="main-aside">
       <Hello v-if="theme.aside.hello.enable" class="weidgets" />
       <div class="sticky">
+        <Toc v-if="store.tocShow" class="weidgets" />
         <Countdown class="weidgets" />
         <Tags v-if="theme.aside.tags.enable" class="weidgets" />
         <SiteData v-if="theme.aside.siteData.enable" class="weidgets" />
       </div>
-    </template>
-  </aside>
+    </aside>
+  </template>
 </template>
 
 <script setup>
+import { mainStore } from '@/store'
 const { theme } = useData();
+const store = mainStore();
 defineProps({
   onlyToc: {
     type: Boolean,
@@ -29,6 +34,7 @@ defineProps({
 <style lang="scss" scoped>
 .main-aside {
   padding-left: 1rem;
+  width: 350px;
   display: flex;
   flex-direction: column;
   animation: fade-up 0.6s 0.3s backwards;

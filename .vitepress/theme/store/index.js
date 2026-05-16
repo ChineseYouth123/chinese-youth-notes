@@ -56,6 +56,8 @@ export const mainStore = defineStore("main", {
       mdIndent: "none",
       // 文章标题对齐
       mdTitleAlign: "left",
+      // 目录显示
+      tocShow: true,
     };
   },
   getters: {},
@@ -131,6 +133,7 @@ export const mainStore = defineStore("main", {
         "backgroundUrl",
         "mdIndent",
         "mdTitleAlign",
+        "tocShow",
       ],
     },
   ],

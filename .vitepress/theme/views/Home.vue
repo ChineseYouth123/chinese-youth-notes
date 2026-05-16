@@ -139,7 +139,7 @@ watch(
       transition: width 0.3s;
     }
     .main-aside {
-      width: 300px;
+      width: 350px;
       padding-left: 1rem;
     }
     @media (max-width: 1200px) {

@@ -9,7 +9,7 @@ export const themeConfig = {
     // 站点logo
     logo: "/images/logo/logo.webp",
     // 站点地址
-    site: "https://example.com",
+    // site: "https://example.com",
     // 语言
     lang: "zh-CN",
     // 反馈表单地址（集中管理）
@@ -18,8 +18,8 @@ export const themeConfig = {
     author: {
       name: "中国青年",
       // cover: "/images/logo/logo.webp",
-      email: "114514@gmail.com",
-      // link: "https://www.imsyy.top",
+      email: "https://www.notion.so/362eedabc59c81b7981fd99666f8fc99?pvs=106",
+      link: "https://www.notion.so/362eedabc59c81b7981fd99666f8fc99?pvs=106",
     },
   },
   // 备案信息
@@ -36,15 +36,15 @@ export const themeConfig = {
       // favicon
       ["link", { rel: "icon", href: "/favicon.ico" }],
       // RSS
-      [
-        "link",
-        {
-          rel: "alternate",
-          type: "application/rss+xml",
-          title: "RSS",
-          href: "https://blog.imsyy.top/rss.xml",
-        },
-      ],
+      // [
+      //   "link",
+      //   {
+      //     rel: "alternate",
+      //     type: "application/rss+xml",
+      //     title: "RSS",
+      //     href: "https://blog.imsyy.top/rss.xml",
+      //   },
+      // ],
       // 预载 CDN
       [
         "link",
@@ -113,7 +113,7 @@ export const themeConfig = {
   // 导航栏菜单
   nav: [
     {
-      text: "文库",
+      text: "博客",
       items: [
         { text: "文章列表", link: "/pages/archives", icon: "article" },
         { text: "全部分类", link: "/pages/categories", icon: "folder" },
@@ -129,14 +129,14 @@ export const themeConfig = {
         { text: "资料", link: "/pages/library/materials", icon: "article" },
       ],
     },
-    {
-      text: "专栏",
-      items: [
-        { text: "技术分享", link: "/pages/categories/技术分享", icon: "technical" },
-        { text: "我的项目", link: "/pages/project", icon: "code" },
-        { text: "效率工具", link: "/pages/tools", icon: "tools" },
-      ],
-    },
+    // {
+    //   text: "专栏",
+    //   items: [
+    //     { text: "技术分享", link: "/pages/categories/技术分享", icon: "technical" },
+    //     { text: "效率工具", link: "/pages/tools", icon: "tools" },
+    //     // { text: "我的项目", link: "/pages/project", icon: "code" },
+    //   ],
+    // },
     // {
     //   text: "友链",
     //   items: [
@@ -148,7 +148,7 @@ export const themeConfig = {
       text: "我的",
       items: [
         // { text: "畅所欲言", link: "/pages/message", icon: "chat" },
-        // { text: "致谢名单", link: "/pages/thanks", icon: "reward" },
+        { text: "致谢名单", link: "/pages/thanks", icon: "reward" },
         { text: "关于本站", link: "/pages/about", icon: "contacts" },
       ],
     },
@@ -369,7 +369,7 @@ export const themeConfig = {
     },
     // 倒计时
     countDown: {
-      enable: true,
+      enable: false,
       // 倒计时日期
       data: {
         name: "春节",
