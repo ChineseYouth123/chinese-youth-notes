@@ -76,14 +76,17 @@ const isPostPage = computed(() => {
 const openRightMenu = (e) => {
   console.log("[contextmenu] right-click detected, rightMenuRef exists:", !!rightMenuRef.value);
   try {
-    const shouldShowDefault = rightMenuRef.value?.openRightMenu(e);
-    // 仅在右键组件明确要求显示系统菜单时放行
-    if (shouldShowDefault !== true) {
-      e.preventDefault();
+    if (rightMenuRef.value) {
+      const shouldShowDefault = rightMenuRef.value.openRightMenu(e);
+      // 仅在右键组件明确要求显示系统菜单时放行
+      if (shouldShowDefault !== true) {
+        e.preventDefault();
+      }
     }
+    // rightMenuRef 为空：什么也不做，保留浏览器默认菜单
   } catch (err) {
     console.error("[RightMenu] 右键菜单出错:", err);
-    e.preventDefault(); // 出错时也不显示系统菜单
+    e.preventDefault();
   }
 };
 
