@@ -30,6 +30,24 @@
             >
               霞鹜文楷
             </span>
+            <span
+              :class="['options', { choose: fontFamily === 'simsun' }]"
+              @click="fontFamily = 'simsun'"
+            >
+              宋体
+            </span>
+            <span
+              :class="['options', { choose: fontFamily === 'simhei' }]"
+              @click="fontFamily = 'simhei'"
+            >
+              黑体
+            </span>
+            <span
+              :class="['options', { choose: fontFamily === 'kaiti' }]"
+              @click="fontFamily = 'kaiti'"
+            >
+              楷体
+            </span>
           </div>
         </div>
         <div class="set-item">

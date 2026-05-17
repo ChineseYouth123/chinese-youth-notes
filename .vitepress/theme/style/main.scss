@@ -74,6 +74,15 @@ html {
     --main-font-family: "LXGW WenKai Screen", sans-serif;
     height: 100%;
   }
+  &.simsun {
+    --main-font-family: "SimSun", "宋体", serif;
+  }
+  &.simhei {
+    --main-font-family: "SimHei", "黑体", sans-serif;
+  }
+  &.kaiti {
+    --main-font-family: "KaiTi", "楷体", serif;
+  }
   .iconfont {
     font-size: 1rem;
   }

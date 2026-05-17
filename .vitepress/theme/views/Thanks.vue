@@ -5,7 +5,7 @@
 
     <div class="thanks-content">
       <div class="thanks-section">
-        <span class="tip">赞赏支持</span>
+        <span class="tip">感谢支持</span>
         <div class="people-list">
           <div
             v-for="(person, index) in people"
@@ -35,6 +35,10 @@ const people = [
   {
     name: "橘猫",
     avatar: "https://sns-webpic-qc.xhscdn.com/202605171023/84e2723e1f990a88f041c4bd700bb39d/notes_pre_post/1040g3k031miih6e96g305on3akv7qo5jkjaf6g0!nd_prv_wgth_webp_3",
+  },
+   {
+    name: "更多",
+    avatar: "",
   },
 ];
 </script>
