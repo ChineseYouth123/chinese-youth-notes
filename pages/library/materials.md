@@ -7,15 +7,25 @@ title: 资料
 各类电子图书资料。
 
 <script setup>
-const glob = import.meta.glob('/pages/library/materials/*.md')
+const mdGlob = import.meta.glob('/pages/library/materials/*.md')
+const txtGlob = import.meta.glob('/pages/library/materials/*.txt')
+const pdfGlob = import.meta.glob('/pages/library/materials/*.pdf')
 
-const files = Object.keys(glob)
-  .map((path) => {
+const files = [
+  ...Object.keys(mdGlob).map((path) => {
     const name = path.split('/').pop().replace(/\.md$/, '')
-    const link = '/pages/library/materials/' + encodeURIComponent(name)
-    return { path, name, link }
-  })
-  .sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+    return { path, name, link: '/pages/library/materials/' + encodeURIComponent(name), ext: '.md' }
+  }),
+  ...Object.keys(txtGlob).map((path) => {
+    const name = path.split('/').pop().replace(/\.txt$/, '')
+    return { path, name, link: '/pages/library/materials/view/' + encodeURIComponent(name), ext: '.txt' }
+  }),
+  ...Object.keys(pdfGlob).map((path) => {
+    const basename = path.split('/').pop()
+    const name = basename.replace(/\.pdf$/, '')
+    return { path, name, link: '/pages/library/materials/' + encodeURIComponent(basename), ext: '.pdf' }
+  }),
+].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
 </script>
 
 <FileList :files="files" />
