@@ -8,7 +8,7 @@ const { pinyin } = pkg;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
-const MD_DIR = path.join(ROOT, "pages", "library", "maozedong");
+const MD_DIR = path.join(ROOT, "docs", "pages", "library", "maozedong");
 
 const CDN_RE = /https:\/\/cdn-mineru\.openxlab\.org\.cn\/result\/[^\s)"']+\.(jpg|jpeg|png|webp|gif|bmp)/gi;
 

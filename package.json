@@ -18,9 +18,9 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
-    "dev": "node scripts/sync-images.mjs && vitepress dev --host",
-    "build": "node scripts/sync-images.mjs && vitepress build",
-    "preview": "vitepress preview",
+    "dev": "node scripts/sync-images.mjs && vitepress dev docs --host",
+    "build": "node scripts/sync-images.mjs && vitepress build docs",
+    "preview": "vitepress preview docs",
     "deploy:vercel": "vercel deploy"
   },
   "devDependencies": {
