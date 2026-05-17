@@ -37,3 +37,6 @@ posts/*
 *.sw?
 
 .vercel
+
+# Image sync mapping cache
+*.mapping.json
