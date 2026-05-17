@@ -8,9 +8,11 @@ title: 图书馆
 
 ## 分类导航
 
-- [毛泽东](./maozedong)
-- [红色书籍](./red-books)
-- [资料](./materials)
+| 类别 | 说明 | 链接 |
+|------|------|------|
+| 毛泽东 | 毛泽东相关电子图书资料 | [进入 →](./maozedong) |
+| 红色书籍 | 红色经典相关电子图书资料 | [进入 →](./red-books) |
+| 资料 | 各类电子图书资料 | [进入 →](./materials) |
 
 <script setup>
 const txtGlob = import.meta.glob('/pages/library/*.txt')
