@@ -56,6 +56,7 @@
 import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 import { calculateScroll, specialDayGray, smoothScrolling } from "@/utils/helper";
+import { useFancybox } from "@/composables/useFancybox";
 
 const route = useRoute();
 const store = mainStore();
@@ -74,7 +75,6 @@ const isPostPage = computed(() => {
 
 // 开启右键菜单
 const openRightMenu = (e) => {
-  console.log("[contextmenu] right-click detected, rightMenuRef exists:", !!rightMenuRef.value);
   try {
     if (rightMenuRef.value) {
       const shouldShowDefault = rightMenuRef.value.openRightMenu(e);
@@ -181,6 +181,8 @@ watch(
 
 onMounted(() => {
   console.log("[onMounted] App mounted, registering contextmenu listener");
+  // 图片灯箱
+  useFancybox();
   // 全站置灰
   specialDayGray();
   // 更改主题类别

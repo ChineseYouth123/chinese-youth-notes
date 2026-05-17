@@ -124,7 +124,6 @@ export const mainStore = defineStore("main", {
       paths: [
         "themeType",
         "bannerType",
-        "useRightMenu",
         "playerShow",
         "playerVolume",
         "backgroundBlur",
@@ -138,6 +137,20 @@ export const mainStore = defineStore("main", {
         "tocShow",
         "contentWidth",
       ],
+      beforeRestore: () => {
+        try {
+          const raw = localStorage.getItem("siteData");
+          if (raw) {
+            const data = JSON.parse(raw);
+            if ("useRightMenu" in data) {
+              delete data.useRightMenu;
+              localStorage.setItem("siteData", JSON.stringify(data));
+            }
+          }
+        } catch (e) {
+          // ignore storage errors
+        }
+      },
     },
   ],
 });

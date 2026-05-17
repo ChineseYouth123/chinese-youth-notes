@@ -35,7 +35,7 @@
             <div
               v-if="clickedType === 'normal'"
               class="btn"
-              @click="router.go(shufflePost(theme.postData))"
+              @click="router.go(withBase(shufflePost(theme.postData)))"
             >
               <i class="iconfont icon-shuffle"></i>
               <span class="name">随便逛逛</span>
@@ -43,12 +43,12 @@
             <div
               v-if="clickedType === 'normal'"
               class="btn"
-              @click="router.go('/pages/categories')"
+              @click="router.go(withBase('/pages/categories'))"
             >
               <i class="iconfont icon-folder"></i>
               <span class="name">全部分类</span>
             </div>
-            <div v-if="clickedType === 'normal'" class="btn" @click="router.go('/pages/tags')">
+            <div v-if="clickedType === 'normal'" class="btn" @click="router.go(withBase('/pages/tags'))">
               <i class="iconfont icon-hashtag"></i>
               <span class="name">全部标签</span>
             </div>
@@ -141,12 +141,12 @@
           <!-- 通用菜单 -->
           <div class="all-menu general">
             <!-- 版权协议 -->
-            <div class="btn" @click="router.go('/pages/cc')">
+            <div class="btn" @click="router.go(withBase('/pages/cc'))">
               <i class="iconfont icon-accessible"></i>
               <span class="name">版权协议</span>
             </div>
             <!-- 隐私政策 -->
-            <div class="btn" @click="router.go('/pages/privacy')">
+            <div class="btn" @click="router.go(withBase('/pages/privacy'))">
               <i class="iconfont icon-privacy"></i>
               <span class="name">隐私政策</span>
             </div>
@@ -222,6 +222,7 @@
 import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 import { smoothScrolling, shufflePost, copyText, copyImage, downloadImage } from "@/utils/helper";
+import { withBase } from "vitepress";
 
 const router = useRouter();
 const store = mainStore();
@@ -348,7 +349,7 @@ const rightMenuFunc = async (type) => {
         window.open(clickedTypeData.value?.href);
         break;
       case "copy-link":
-        const pageLink = theme.value.site + router.route.path;
+        const pageLink = theme.value.site ? theme.value.site + router.route.path : withBase(router.route.path);
         if (pageLink) copyText(pageLink);
         break;
       case "input-paste":
