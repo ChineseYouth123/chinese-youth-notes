@@ -168,6 +168,23 @@
         </div>
         <span class="title">杂项调整</span>
         <div class="set-item">
+          <span class="set-label">图片灯箱</span>
+          <div class="set-options">
+            <span
+              :class="['options', { choose: fancyboxEnable }]"
+              @click="fancyboxEnable = true"
+            >
+              开启
+            </span>
+            <span
+              :class="['options', { choose: !fancyboxEnable }]"
+              @click="fancyboxEnable = false"
+            >
+              关闭
+            </span>
+          </div>
+        </div>
+        <div class="set-item">
           <span class="set-label">额外信息显示位置</span>
           <div class="set-options">
             <span
@@ -194,7 +211,7 @@ import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 
 const store = mainStore();
-const { themeType, fontFamily, fontSize, infoPosition, backgroundType, backgroundUrl, bannerType, mdIndent, mdTitleAlign, contentWidth } =
+const { themeType, fontFamily, fontSize, infoPosition, backgroundType, backgroundUrl, bannerType, mdIndent, mdTitleAlign, contentWidth, fancyboxEnable } =
   storeToRefs(store);
 </script>
 

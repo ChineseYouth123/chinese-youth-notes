@@ -7,7 +7,7 @@
           <a
             v-for="(item, index) in postMetaData.categories"
             :key="index"
-            :href="`/pages/categories/${item}`"
+            :href="withBase(`/pages/categories/${item}`)"
             class="cat-item"
           >
             <i class="iconfont icon-folder" />
@@ -18,7 +18,7 @@
           <a
             v-for="(item, index) in postMetaData.tags"
             :key="index"
-            :href="`/pages/tags/${item}`"
+            :href="withBase(`/pages/tags/${item}`)"
             class="tag-item"
           >
             <i class="iconfont icon-hashtag" />
@@ -70,7 +70,7 @@
             <a
               v-for="(item, index) in postMetaData.tags"
               :key="index"
-              :href="`/pages/tags/${item}`"
+              :href="withBase(`/pages/tags/${item}`)"
               class="tag-item"
             >
               <i class="iconfont icon-hashtag" />
@@ -78,7 +78,7 @@
             </a>
           </div>
           <a
-            href="/pages/fankui"
+            :href="withBase('/pages/fankui')"
             class="report"
           >
             <i class="iconfont icon-report" />
@@ -100,9 +100,9 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
 import { formatTimestamp } from "@/utils/helper";
 import { generateId } from "@/utils/commonTools";
-import initFancybox from "@/utils/initFancybox";
 
 const { page, theme, frontmatter } = useData();
 
@@ -115,9 +115,7 @@ const postMetaData = computed(() => {
   return theme.value.postData.find((item) => item.id === postId);
 });
 
-onMounted(() => {
-  initFancybox(theme.value);
-});
+
 </script>
 
 <style lang="scss" scoped>

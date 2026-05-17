@@ -67,14 +67,11 @@ const markdownConfig = (md, themeConfig) => {
   md.renderer.rules.table_close = () => {
     return "</table></div>";
   };
-  // 图片
+  // 图片（始终包裹 data-fancybox，运行时由 useFancybox 控制 bind/unbind）
   md.renderer.rules.image = (tokens, idx) => {
     const token = tokens[idx];
     const src = token.attrs[token.attrIndex("src")][1];
     const alt = token.content;
-    if (!themeConfig.fancybox.enable) {
-      return `<img src="${src}" alt="${alt}" loading="lazy">`;
-    }
     return `<a class="img-fancybox" href="${src}" data-fancybox="gallery" data-caption="${alt}">
                 <img class="post-img" src="${src}" alt="${alt}" loading="lazy" />
                 <span class="post-img-tip">${alt}</span>

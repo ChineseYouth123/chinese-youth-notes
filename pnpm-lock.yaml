@@ -11,6 +11,9 @@ importers:
       '@embedpdf/vue-pdf-viewer':
         specifier: ^2.14.2
         version: 2.14.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(svelte@5.55.7)(vue@3.5.13(typescript@4.9.5))
+      '@fancyapps/ui':
+        specifier: ^5.0.36
+        version: 5.0.36
       '@types/node':
         specifier: ^22.10.7
         version: 22.10.7
@@ -1262,6 +1265,9 @@ packages:
   '@eslint/js@8.57.1':
     resolution: {integrity: sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
+  '@fancyapps/ui@5.0.36':
+    resolution: {integrity: sha512-GMygQzp1MBTFNTT6AzpbL6pXTD6bTxwjmmpI1fe8Ozmmiseu8/g82Sudl1YhcbZmS4bJgaBOF5THDFGpXQ1fDw==}
 
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
@@ -5913,6 +5919,8 @@ snapshots:
       - supports-color
 
   '@eslint/js@8.57.1': {}
+
+  '@fancyapps/ui@5.0.36': {}
 
   '@fastify/busboy@2.1.1': {}
 

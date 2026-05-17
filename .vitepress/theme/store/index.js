@@ -60,6 +60,8 @@ export const mainStore = defineStore("main", {
       tocShow: true,
       // 正文宽度
       contentWidth: 900,
+      // 图片灯箱
+      fancyboxEnable: true,
     };
   },
   getters: {},
@@ -136,6 +138,7 @@ export const mainStore = defineStore("main", {
         "mdTitleAlign",
         "tocShow",
         "contentWidth",
+        "fancyboxEnable",
       ],
       beforeRestore: () => {
         try {
