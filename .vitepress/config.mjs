@@ -68,6 +68,24 @@ export default withPwa(
         .replace(/\.md$/, "");
       pageData.frontmatter.head ??= [];
       pageData.frontmatter.head.push(["link", { rel: "canonical", href: canonicalUrl }]);
+      // 为 pages/library/ 下的内容页自动启用文章预览样式
+      if (
+        pageData.relativePath.startsWith("pages/library/")
+        && !pageData.relativePath.includes("[")
+      ) {
+        const segments = pageData.relativePath.split("/");
+        if (segments.length === 4) {
+          if (pageData.frontmatter.postStyle === undefined) {
+            pageData.frontmatter.postStyle = true;
+          }
+          if (pageData.frontmatter.aside === undefined) {
+            pageData.frontmatter.aside = true;
+          }
+          if (pageData.frontmatter.onlyToc === undefined) {
+            pageData.frontmatter.onlyToc = true;
+          }
+        }
+      }
     },
     // transformHtml
     transformHtml: (html) => {
