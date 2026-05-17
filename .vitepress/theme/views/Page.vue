@@ -1,13 +1,18 @@
 <!-- 普通页面 -->
 <template>
-  <div :class="[frontmatter.layout || 'page', { 'has-aside': frontmatter.aside }]">
-    <div class="page-content">
-      <!-- 页面内容 -->
-      <Content id="page-content" :class="['markdown-main-style', { 's-card': frontmatter.card }]" />
-      <!-- 评论 -->
-      <Comments v-if="frontmatter.comment" />
-    </div>
-    <Aside v-if="frontmatter.aside" />
+  <div :class="[frontmatter.layout || 'page', { 'has-aside': frontmatter.aside, 'post-style': frontmatter.postStyle }]">
+    <template v-if="frontmatter.postStyle">
+      <DocPreview :show-aside="frontmatter.aside" :only-toc="frontmatter.onlyToc ?? true">
+        <Content id="page-content" class="markdown-main-style" />
+      </DocPreview>
+    </template>
+    <template v-else>
+      <div class="page-content">
+        <Content id="page-content" :class="['markdown-main-style', { 's-card': frontmatter.card }]" />
+        <Comments v-if="frontmatter.comment" />
+      </div>
+      <Aside v-if="frontmatter.aside" :only-toc="frontmatter.onlyToc" />
+    </template>
   </div>
   <TocToggle :show="frontmatter.aside" />
 </template>
@@ -24,6 +29,9 @@ const { frontmatter } = useData();
   display: flex;
   flex-direction: row;
   animation: fade-up 0.6s 0.1s backwards;
+  &.post-style {
+    display: block;
+  }
   .page-content {
     flex: 1;
     min-width: 0;
@@ -74,5 +82,4 @@ const { frontmatter } = useData();
     }
   }
 }
-
 </style>
