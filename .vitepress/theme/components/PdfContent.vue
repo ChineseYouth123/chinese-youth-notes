@@ -1,26 +1,34 @@
 <template>
-  <div class="post">
-    <div class="post-meta">
-      <h1 class="title">{{ title }}</h1>
+  <ClientOnly>
+    <div class="post">
+      <div class="post-meta">
+        <h1 class="title">{{ title }}</h1>
+      </div>
+      <div class="post-content">
+        <article class="post-article s-card">
+          <div v-if="pdfUrl" class="pdf-wrapper">
+            <PDFViewer
+              :config="{
+                src: pdfUrl,
+                i18n: { defaultLocale: 'zh-CN' },
+                disabledCategories: ['annotation', 'print', 'export'],
+              }"
+              :style="{ width: '100%', height: '100%' }"
+            />
+          </div>
+          <div v-else class="not-found">文件未找到</div>
+        </article>
+      </div>
     </div>
-    <div class="post-content">
-      <article class="post-article s-card">
-        <div v-if="pdfUrl" class="pdf-wrapper">
-          <PDFViewer
-            :config="{
-              src: pdfUrl,
-              disabledCategories: ['annotation', 'print', 'export'],
-            }"
-          />
-        </div>
-        <div v-else class="not-found">文件未找到</div>
-      </article>
-    </div>
-  </div>
+  </ClientOnly>
 </template>
 
 <script setup>
-import { PDFViewer } from "@embedpdf/vue-pdf-viewer";
+import { defineAsyncComponent } from "vue";
+
+const PDFViewer = defineAsyncComponent(() =>
+  import("@embedpdf/vue-pdf-viewer").then((m) => m.PDFViewer)
+);
 
 defineProps({
   title: String,
@@ -62,7 +70,7 @@ defineProps({
       }
       .pdf-wrapper {
         width: 100%;
-        min-height: 75vh;
+        height: 80vh;
       }
       .not-found {
         text-align: center;
