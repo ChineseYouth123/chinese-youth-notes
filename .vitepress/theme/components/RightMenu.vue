@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <!-- 右键菜单 -->
-    <Transition name="fade" mode="out-in">
+    <Transition name="fade">
       <div
         v-if="rightMenuShow"
         class="right-menu"
