@@ -9,9 +9,9 @@
           <div v-if="pdfUrl" class="pdf-wrapper">
             <PDFViewer
               :config="{
-                src: pdfUrl,
-                i18n: { defaultLocale: 'zh-CN' },
-                disabledCategories: ['annotation', 'print', 'export'],
+                src: pdfUrl, // PDF文件URL
+                i18n: { defaultLocale: 'zh-CN' }, // 设置默认语言为中文
+                disabledCategories: [''], // 禁用工具栏中的功能
               }"
               :style="{ width: '100%', height: '100%' }"
             />
