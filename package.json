@@ -18,10 +18,11 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
-    "dev": "node scripts/sync-images.mjs && vitepress dev --host",
-    "build": "node scripts/sync-images.mjs && vitepress build",
-    "preview": "vitepress preview",
-    "deploy:vercel": "vercel deploy"
+    "dev": "node scripts/sync-images.mjs && vitepress dev docs --host",
+    "build": "node scripts/sync-images.mjs && vitepress build docs",
+    "preview": "pnpm run build && wrangler dev",
+    "deploy:vercel": "vercel deploy",
+    "deploy": "pnpm run build && wrangler deploy"
   },
   "devDependencies": {
     "cheerio": "1.0.0-rc.12",
@@ -43,7 +44,8 @@
     "unplugin-vue-components": "^0.26.0",
     "vercel": "^37.14.0",
     "vitepress": "^1.5.0",
-    "vitepress-plugin-tabs": "^0.5.0"
+    "vitepress-plugin-tabs": "^0.5.0",
+    "wrangler": "^4.92.0"
   },
   "dependencies": {
     "@embedpdf/vue-pdf-viewer": "^2.14.2",
