@@ -15,15 +15,15 @@ coverage
 *.local
 test.html
 .env
-.vitepress/dist
-.vitepress/cache
-.vitepress/components.d.ts
-.vitepress/auto-imports.d.ts
+docs/.vitepress/dist
+docs/.vitepress/cache
+docs/.vitepress/components.d.ts
+docs/.vitepress/auto-imports.d.ts
 themeConfig.mjs
-!.vitepress/theme/assets/themeConfig.mjs
+!docs/.vitepress/theme/assets/themeConfig.mjs
 
-pages/posts/*
-!pages/posts/2024/1010.md
+docs/pages/posts/*
+!docs/pages/posts/2024/1010.md
 
 # Editor directories and files
 .vscode/*
@@ -40,3 +40,9 @@ pages/posts/*
 
 # Image sync mapping cache
 *.mapping.json
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
