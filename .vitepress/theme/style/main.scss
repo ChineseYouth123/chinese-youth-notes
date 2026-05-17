@@ -284,6 +284,9 @@ a {
 html.md-indent-2 {
   .markdown-main-style p {
     text-indent: 2em !important;
+    code,a {
+      text-indent: 0 !important;
+    }
   }
 }
 html.md-indent-4 {

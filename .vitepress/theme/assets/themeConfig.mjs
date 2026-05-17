@@ -195,7 +195,7 @@ export const themeConfig = {
           url: "http://www.mzdbl.com.cn/",
         },
       ]
-    }
+    },
     // {
     //   name: "项目",
     //   list: [
