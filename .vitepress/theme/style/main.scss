@@ -75,13 +75,13 @@ html {
     height: 100%;
   }
   &.simsun {
-    --main-font-family: "SimSun", "宋体", serif;
+    --main-font-family: "STSong", "SimSun", "宋体", "Noto Serif CJK SC", "Source Han Serif SC", serif;
   }
   &.simhei {
-    --main-font-family: "SimHei", "黑体", sans-serif;
+    --main-font-family: "PingFang SC", "Microsoft YaHei", "SimHei", "黑体", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
   }
   &.kaiti {
-    --main-font-family: "KaiTi", "楷体", serif;
+    --main-font-family: "STKaiti", "KaiTi", "楷体", "AR PL UKai CN", "Noto Serif CJK SC", serif;
   }
   .iconfont {
     font-size: 1rem;
