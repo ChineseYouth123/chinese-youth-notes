@@ -16,7 +16,7 @@ git add . && git commit -m "feat: ..." && git push
 ## Quick start
 ```bash
 npm run dev        # dev server on port 9877
-npm run build      # output → docs/.vitepress/dist
+npm run build      # output → .vitepress/dist
 npm run preview    # preview built site
 npm run lint       # ESLint (vue3 + airbnb-base, runs --fix)
 npm run format     # Prettier
@@ -28,25 +28,25 @@ npm run format     # Prettier
 
 ## Architecture
 - VitePress site using custom theme (`curve`) by imsyy
-- Theme entry: `docs/.vitepress/theme/index.mjs`
-- VitePress config: `docs/.vitepress/config.mjs`
-- `@` alias → `docs/.vitepress/theme` (configured in vite section of config.mjs)
+- Theme entry: `.vitepress/theme/index.mjs`
+- VitePress config: `.vitepress/config.mjs`
+- `@` alias → `.vitepress/theme` (configured in vite section of config.mjs)
 - `type: "module"` — all config/scripts are ESM
 
 ## Theme configuration
-- Default config: `docs/.vitepress/theme/assets/themeConfig.mjs`
-- User override: copy to `docs/themeConfig.mjs` (gitignored); `docs/.vitepress/init.mjs` merges it at build/dev time
+- Default config: `.vitepress/theme/assets/themeConfig.mjs`
+- User override: copy to root as `themeConfig.mjs` (gitignored); `.vitepress/init.mjs` merges it at build/dev time
 - **Do not rename or delete the original file** or override won't apply
 
-## Content structure (all under `docs/`)
-- `docs/pages/posts/` — blog posts (markdown, frontmatter with `title`, `date`, `tags`, `categories`, `top`, `cover`, `description`)
-- `docs/pages/` — static pages
-- `docs/page-example/` — dynamic route example for pagination (`[num].paths.mjs`)
-- `docs/public/` — static assets
+## Content structure
+- `pages/posts/` — blog posts (markdown, frontmatter with `title`, `date`, `tags`, `categories`, `top`, `cover`, `description`)
+- `pages/` — static pages
+- `page-example/` — dynamic route example for pagination (`[num].paths.mjs`)
+- `public/` — static assets
 
 ## Build & tooling quirks
 - Build minifier: **terser** (strips `console.log` via `pure_funcs`)
-- Generated files (do not edit): `docs/.vitepress/auto-imports.d.ts`, `docs/.vitepress/components.d.ts`
+- Generated files (do not edit): `.vitepress/auto-imports.d.ts`, `.vitepress/components.d.ts`
 - `cleanUrls: true` — no `.html` in URLs
 - PWA via `@vite-pwa/vitepress`
 - Vite dev server port: **9877** (not default 5173)

@@ -15,15 +15,15 @@ coverage
 *.local
 test.html
 .env
-docs/.vitepress/dist
-docs/.vitepress/cache
-docs/.vitepress/components.d.ts
-docs/.vitepress/auto-imports.d.ts
+.vitepress/dist
+.vitepress/cache
+.vitepress/components.d.ts
+.vitepress/auto-imports.d.ts
 themeConfig.mjs
-!docs/.vitepress/theme/assets/themeConfig.mjs
+!.vitepress/theme/assets/themeConfig.mjs
 
-docs/pages/posts/*
-!docs/pages/posts/2024/1010.md
+pages/posts/*
+!pages/posts/2024/1010.md
 
 # Editor directories and files
 .vscode/*

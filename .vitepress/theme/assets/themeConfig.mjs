@@ -161,8 +161,7 @@ export const themeConfig = {
         {
           icon: "/images/logo/logo.webp",
           name: "主站",
-          // url: "/",
-          url: "https://chineseyouth123.github.io/chinese-youth-notes"
+          url: "/",
         },
         // 备份博客
         // {

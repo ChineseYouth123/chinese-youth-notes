@@ -22,7 +22,7 @@ jobs:
       - run: pnpm build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/.vitepress/dist
+          path: .vitepress/dist
   deploy:
     environment:
       name: github-pages
