@@ -135,6 +135,19 @@
             </span>
           </div>
         </div>
+        <div class="set-item">
+          <span class="set-label">正文宽度</span>
+          <div class="set-options">
+            <span
+              v-for="size in [800, 900, 1000, 1100, 1200]"
+              :key="size"
+              :class="['options', { choose: contentWidth === size }]"
+              @click="contentWidth = size"
+            >
+              {{ size }}
+            </span>
+          </div>
+        </div>
         <span class="title">杂项调整</span>
         <div class="set-item">
           <span class="set-label">额外信息显示位置</span>
@@ -163,7 +176,7 @@ import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 
 const store = mainStore();
-const { themeType, fontFamily, fontSize, infoPosition, backgroundType, backgroundUrl, bannerType, mdIndent, mdTitleAlign } =
+const { themeType, fontFamily, fontSize, infoPosition, backgroundType, backgroundUrl, bannerType, mdIndent, mdTitleAlign, contentWidth } =
   storeToRefs(store);
 </script>
 

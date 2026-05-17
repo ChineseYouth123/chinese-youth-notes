@@ -60,7 +60,7 @@ import { calculateScroll, specialDayGray, smoothScrolling } from "@/utils/helper
 const route = useRoute();
 const store = mainStore();
 const { frontmatter, page, theme } = useData();
-const { loadingStatus, footerIsShow, themeValue, themeType, backgroundType, fontFamily, fontSize, scrollData, mdIndent, mdTitleAlign } =
+const { loadingStatus, footerIsShow, themeValue, themeType, backgroundType, fontFamily, fontSize, scrollData, mdIndent, mdTitleAlign, contentWidth } =
   storeToRefs(store);
 
 // 右键菜单
@@ -155,6 +155,12 @@ const changeMdPreviewStyle = () => {
   htmlElement.classList.add("md-title-" + mdTitleAlign.value);
 };
 
+// 切换正文宽度
+const changeContentWidth = () => {
+  const htmlElement = document.documentElement;
+  htmlElement.style.setProperty("--content-width", contentWidth.value + "px");
+};
+
 // 监听设置变化
 watch(
   () => [themeType.value, backgroundType.value],
@@ -168,6 +174,10 @@ watch(
   () => [mdIndent.value, mdTitleAlign.value],
   () => changeMdPreviewStyle(),
 );
+watch(
+  () => contentWidth.value,
+  () => changeContentWidth(),
+);
 
 onMounted(() => {
   console.log("[onMounted] App mounted, registering contextmenu listener");
@@ -179,6 +189,8 @@ onMounted(() => {
   changeSiteFont();
   // 切换文章预览样式
   changeMdPreviewStyle();
+  // 切换正文宽度
+  changeContentWidth();
   // 滚动监听
   window.addEventListener("scroll", calculateScroll);
   // 右键监听
