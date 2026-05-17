@@ -5,12 +5,14 @@
     </div>
     <div class="post-content">
       <article class="post-article s-card">
-        <iframe
-          v-if="pdfUrl"
-          :src="pdfUrl"
-          class="pdf-frame"
-          frameborder="0"
-        />
+        <div v-if="pdfUrl" class="pdf-wrapper">
+          <PDFViewer
+            :config="{
+              src: pdfUrl,
+              disabledCategories: ['annotation', 'print', 'export'],
+            }"
+          />
+        </div>
         <div v-else class="not-found">文件未找到</div>
       </article>
     </div>
@@ -18,10 +20,12 @@
 </template>
 
 <script setup>
+import { PDFViewer } from "@embedpdf/vue-pdf-viewer";
+
 defineProps({
   title: String,
   pdfUrl: String,
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -56,11 +60,9 @@ defineProps({
       &:hover {
         border-color: var(--main-card-border);
       }
-      .pdf-frame {
+      .pdf-wrapper {
         width: 100%;
-        height: 85vh;
-        border: none;
-        border-radius: 8px;
+        min-height: 75vh;
       }
       .not-found {
         text-align: center;
