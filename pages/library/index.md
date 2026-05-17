@@ -11,3 +11,22 @@ title: 图书馆
 - [毛泽东](./maozedong)
 - [红色书籍](./red-books)
 - [资料](./materials)
+
+<script setup>
+const txtGlob = import.meta.glob('/pages/library/*.txt')
+const pdfGlob = import.meta.glob('/pages/library/*.pdf')
+
+const files = [
+  ...Object.keys(txtGlob).map((path) => {
+    const name = path.split('/').pop().replace(/\.txt$/, '')
+    return { path, name, link: '/pages/library/view/' + encodeURIComponent(name), ext: '.txt' }
+  }),
+  ...Object.keys(pdfGlob).map((path) => {
+    const basename = path.split('/').pop()
+    const name = basename.replace(/\.pdf$/, '')
+    return { path, name, link: '/pages/library/' + encodeURIComponent(basename), ext: '.pdf' }
+  }),
+].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
+</script>
+
+<FileList v-if="files.length" :files="files" />
