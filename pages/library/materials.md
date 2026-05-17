@@ -21,9 +21,8 @@ const files = [
     return { path, name, link: '/pages/library/materials/view/' + encodeURIComponent(name), ext: '.txt' }
   }),
   ...Object.keys(pdfGlob).map((path) => {
-    const basename = path.split('/').pop()
-    const name = basename.replace(/\.pdf$/, '')
-    return { path, name, link: '/pages/library/materials/' + encodeURIComponent(basename), ext: '.pdf' }
+    const name = path.split('/').pop().replace(/\.pdf$/, '')
+    return { path, name, link: '/pages/library/materials/pdf/' + encodeURIComponent(name), ext: '.pdf' }
   }),
 ].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'))
 </script>
