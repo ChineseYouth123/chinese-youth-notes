@@ -2,8 +2,8 @@
   <div class="copyright s-card">
     <div class="title">
       <span class="post-name">{{ postData?.title || "未命名文章" }}</span>
-      <a :href="theme.siteMeta.site + route.path" class="post-link" target="_blank">
-        {{ theme.siteMeta.site + route.path }}
+      <a :href="theme.siteMeta.site ? theme.siteMeta.site + route.path : withBase(route.path)" class="post-link" target="_blank">
+        {{ theme.siteMeta.site ? theme.siteMeta.site + route.path : withBase(route.path) }}
       </a>
     </div>
     <div class="post-meta">
@@ -35,6 +35,7 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
 import { formatTimestamp } from "@/utils/helper";
 
 const { theme } = useData();

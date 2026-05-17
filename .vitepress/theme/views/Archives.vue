@@ -12,14 +12,14 @@
             v-for="(post, postIndex) in theme.archivesData.data[year].articles"
             :key="postIndex"
             class="posts-item s-card hover"
-            @click="router.go(post.regularPath)"
+            @click="router.go(withBase(post.regularPath))"
           >
             <span class="title">{{ post.title }}</span>
             <div class="tags">
               <a
                 v-for="(tags, tagsIndex) in post.tags"
                 :key="tagsIndex"
-                :href="`/pages/tags/${tags}`"
+                :href="withBase(`/pages/tags/${tags}`)"
                 class="type-item"
               >
                 <i class="iconfont icon-hashtag" />
@@ -34,6 +34,8 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
+
 const { theme } = useData();
 const router = useRouter();
 </script>

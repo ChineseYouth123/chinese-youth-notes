@@ -4,7 +4,7 @@
     <div v-if="showBar" class="footer-bar">
       <span class="site-title">{{ site.title }}</span>
       <span class="site-desc">{{ site.description }}</span>
-      <a href="/" class="to-home">了解更多</a>
+      <a :href="withBase('/')" class="to-home">了解更多</a>
     </div>
     <div class="footer-social">
       <a
@@ -36,7 +36,7 @@
           <a
             v-for="(link, linkIndex) in item.items"
             :key="linkIndex"
-            :href="link.link"
+            :href="link.link.startsWith('/') ? withBase(link.link) : link.link"
             :target="link.newTab ? '_blank' : null"
             class="link-text"
           >
@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
 import { smoothScrolling } from "@/utils/helper";
 
 const { theme, site } = useData();

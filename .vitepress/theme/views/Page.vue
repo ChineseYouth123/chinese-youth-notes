@@ -14,7 +14,7 @@
       <Aside v-if="frontmatter.aside" :only-toc="frontmatter.onlyToc" />
     </template>
   </div>
-  <TocToggle :show="frontmatter.aside" />
+  <TocToggle :show="!!frontmatter.postStyle" />
 </template>
 
 <script setup>

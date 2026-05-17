@@ -11,10 +11,10 @@ const getPostMDFilePaths = async () => {
   try {
     // 获取所有 md 文件路径
     let paths = await globby(["**.md"], {
-      ignore: ["node_modules", "pages", ".vitepress", "README.md"],
+      ignore: ["node_modules", ".vitepress", "README.md"],
     });
     // 过滤路径，只包括 'posts' 目录下的文件
-    return paths.filter((item) => item.includes("posts/"));
+    return paths.filter((item) => item.includes("pages/posts/"));
   } catch (error) {
     console.error("获取文章路径时出错:", error);
     throw error;
@@ -75,7 +75,7 @@ export const getAllPosts = async () => {
             tags,
             categories,
             description,
-            regularPath: `/${item.replace(".md", ".html")}`,
+            regularPath: `/${item.replace(".md", "")}`,
             top,
             cover,
           };

@@ -44,6 +44,8 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
+
 const router = useRouter();
 const { theme } = useData();
 const { rewardData } = theme.value;
@@ -61,7 +63,7 @@ const rewardShow = ref(false);
 // 跳转至赞赏名单
 const toRewardList = () => {
   rewardShow.value = false;
-  router.go("/pages/thanks");
+  router.go(withBase("/pages/thanks"));
 };
 </script>
 

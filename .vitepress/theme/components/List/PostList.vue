@@ -34,7 +34,7 @@
               v-for="tags in item?.tags"
               :key="tags"
               class="tags-name"
-              @click.stop="router.go(`/pages/tags/${tags}`)"
+              @click.stop="router.go(withBase(`/pages/tags/${tags}`))"
             >
               <i class="iconfont icon-hashtag" />
               {{ tags }}
@@ -48,6 +48,7 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
 import { mainStore } from "@/store";
 import { formatTimestamp } from "@/utils/helper";
 
@@ -105,7 +106,7 @@ const toPost = (path) => {
     store.lastScrollY = scrollY;
   }
   // 跳转文章
-  router.go(path);
+  router.go(withBase(path));
 };
 </script>
 

@@ -186,6 +186,16 @@ export const themeConfig = {
         },
       ],
     },
+    {
+      name: "资源",
+      list: [
+        {
+          icon: "http://www.mzdbl.com.cn/image/biaoti1-2.gif",
+          name: "红旗网",
+          url: "http://www.mzdbl.com.cn/",
+        },
+      ]
+    }
     // {
     //   name: "项目",
     //   list: [

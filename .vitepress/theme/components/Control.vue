@@ -16,13 +16,13 @@
             <div class="menu-item open" title="显示模式切换" @click.stop="store.changeThemeType">
               <i :class="`iconfont icon-${store.themeType}`"></i>
             </div>
-            <div
+            <!-- <div
               :class="['menu-item', { open: store.useRightMenu }]"
               title="右键菜单开关"
               @click.stop="rightMenuSwitch"
             >
               <i class="iconfont icon-list"></i>
-            </div>
+            </div> -->
             <div
               :class="['menu-item', { open: store.playerShow }]"
               title="播放器开关"

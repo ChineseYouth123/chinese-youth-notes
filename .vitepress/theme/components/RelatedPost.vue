@@ -6,7 +6,7 @@
         <i class="iconfont icon-star"></i>
         相关推荐
       </span>
-      <span class="shuffle" @click="router.go(shufflePost(theme.postData))"> 随便逛逛 </span>
+      <span class="shuffle" @click="router.go(withBase(shufflePost(theme.postData)))"> 随便逛逛 </span>
     </div>
     <!-- 文章列表 -->
     <PostList :listData="relatedData" simple />
@@ -14,6 +14,7 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
 import { generateId } from "@/utils/commonTools";
 import { shufflePost } from "@/utils/helper";
 

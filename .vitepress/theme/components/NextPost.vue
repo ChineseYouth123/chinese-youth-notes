@@ -10,7 +10,7 @@
         show: infoPosition === 'fixed' && nextPostShow && !footerIsShow,
       },
     ]"
-    @click="router.go(nextPostData?.regularPath)"
+    @click="router.go(withBase(nextPostData?.regularPath))"
   >
     <span class="post-tip">
       {{ isNextPost ? "下一篇阅读" : "阅读上一篇" }}
@@ -22,6 +22,7 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
 import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 import { generateId } from "@/utils/commonTools";

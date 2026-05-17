@@ -23,7 +23,7 @@ const themeConfig = await getThemeConfig();
 // https://vitepress.dev/reference/site-config
 export default withPwa(
   defineConfig({
-    base: "/",
+    base: "/chinese-youth-notes/",
     title: themeConfig.siteMeta.title,
     description: themeConfig.siteMeta.description,
     lang: themeConfig.siteMeta.lang,
@@ -63,11 +63,13 @@ export default withPwa(
     // transformHead
     transformPageData: async (pageData) => {
       // canonical URL
-      const canonicalUrl = `${themeConfig.siteMeta.site}/${pageData.relativePath}`
-        .replace(/index\.md$/, "")
-        .replace(/\.md$/, "");
-      pageData.frontmatter.head ??= [];
-      pageData.frontmatter.head.push(["link", { rel: "canonical", href: canonicalUrl }]);
+      if (themeConfig.siteMeta.site) {
+        const canonicalUrl = `${themeConfig.siteMeta.site}/${pageData.relativePath}`
+          .replace(/index\.md$/, "")
+          .replace(/\.md$/, "");
+        pageData.frontmatter.head ??= [];
+        pageData.frontmatter.head.push(["link", { rel: "canonical", href: canonicalUrl }]);
+      }
       // 为 pages/library/ 下的内容页自动启用文章预览样式
       if (
         pageData.relativePath.startsWith("pages/library/")

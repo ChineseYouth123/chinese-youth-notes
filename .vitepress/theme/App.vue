@@ -70,7 +70,7 @@ const rightMenuRef = ref(null);
 // 判断是否为文章页面
 const isPostPage = computed(() => {
   const routePath = decodeURIComponent(route.path);
-  return routePath.includes("/posts/");
+  return routePath.includes("/pages/posts/");
 });
 
 // 开启右键菜单

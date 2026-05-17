@@ -53,6 +53,7 @@
 
 <script setup>
 import { mainStore } from "@/store";
+import { withBase } from "vitepress";
 
 const store = mainStore();
 const router = useRouter();
@@ -65,7 +66,7 @@ const { nav, tagsData } = theme.value;
 const pageJump = (url) => {
   if (!url) return false;
   store.changeShowStatus("mobileMenuShow");
-  router.go(url);
+  router.go(withBase(url));
 };
 </script>
 

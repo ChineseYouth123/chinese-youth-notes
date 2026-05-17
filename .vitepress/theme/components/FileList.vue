@@ -3,7 +3,7 @@
     <a
       v-for="file in files"
       :key="file.path"
-      :href="file.link"
+      :href="withBase(file.link)"
       class="file-item s-card"
     >
       <span class="file-name">{{ file.name }}</span>
@@ -13,6 +13,8 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress"
+
 defineProps({
   files: {
     type: Array,

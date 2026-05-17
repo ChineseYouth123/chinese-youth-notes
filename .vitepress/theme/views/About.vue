@@ -88,7 +88,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vitepress'
+import { useRouter, withBase } from 'vitepress'
 import { getStatistics } from '@/api'
 
 const { theme } = useData()
@@ -108,8 +108,8 @@ const getStatisticsData = async () => {
 }
 
 // 路由跳转
-const goToArticle = () => router.push('/articles')
-const goToDiscussion = () => router.push('/discussions')
+const goToArticle = () => router.push(withBase('/articles'))
+const goToDiscussion = () => router.push(withBase('/discussions'))
 
 onMounted(() => {
   getStatisticsData()

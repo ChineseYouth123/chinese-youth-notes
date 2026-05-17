@@ -4,12 +4,14 @@
       <!-- 404 -->
       <h1 class="title">无法找到请求的页面</h1>
       <span class="title-tip">页面不存在 </span>
-      <button class="to-home" @click="router.go('/')">回到主页</button>
+      <button class="to-home" @click="router.go(withBase('/'))">回到主页</button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
+
 const router = useRouter();
 </script>
 

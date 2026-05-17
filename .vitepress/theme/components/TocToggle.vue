@@ -66,5 +66,6 @@ const store = mainStore();
 
   &:hover { opacity: 0.85; }
   &:active { transform: scale(0.9); }
+
 }
 </style>

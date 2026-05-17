@@ -49,6 +49,8 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
+
 const router = useRouter();
 
 // 分页数据
@@ -138,14 +140,14 @@ const jumpPage = (url, page) => {
   // 使用参数跳转
   if (props.useParams) {
     if (page === 1) {
-      router.go(`${props.routePath}`);
+      router.go(withBase(`${props.routePath}`));
     } else {
-      router.go(`${props.routePath}?page=${page}`);
+      router.go(withBase(`${props.routePath}?page=${page}`));
     }
   }
   // 正常跳转
   else {
-    router.go(url);
+    router.go(withBase(url));
   }
 };
 

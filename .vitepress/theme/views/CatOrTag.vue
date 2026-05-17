@@ -14,7 +14,7 @@
       <a
         v-for="(item, key, index) in theme.categoriesData"
         :key="index"
-        :href="`/pages/categories/${key}`"
+        :href="withBase(`/pages/categories/${key}`)"
         class="type-item s-card"
       >
         <i class="iconfont icon-folder" />
@@ -26,7 +26,7 @@
       <a
         v-for="(item, key, index) in theme.tagsData"
         :key="index"
-        :href="`/pages/tags/${key}`"
+        :href="withBase(`/pages/tags/${key}`)"
         class="type-item s-card"
       >
         <i class="iconfont icon-hashtag" />
@@ -38,6 +38,8 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
+
 const { theme } = useData();
 const props = defineProps({
   // 页面类型

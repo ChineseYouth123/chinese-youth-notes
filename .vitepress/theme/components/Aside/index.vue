@@ -7,7 +7,7 @@
   </template>
   <!-- 普通页面：显示侧边栏组件 + 目录 -->
   <template v-else>
-    <aside class="main-aside">
+    <aside class="main-aside full-aside">
       <Hello v-if="theme.aside.hello.enable" class="weidgets" />
       <div class="sticky">
         <Toc v-if="store.tocShow" class="weidgets" />
@@ -70,6 +70,12 @@ defineProps({
       &:last-child {
         margin-bottom: 0;
       }
+    }
+  }
+
+  &.full-aside {
+    @media (max-width: 1200px) {
+      display: none;
     }
   }
 }

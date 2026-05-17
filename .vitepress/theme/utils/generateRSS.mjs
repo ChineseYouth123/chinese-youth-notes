@@ -25,7 +25,7 @@ export const createRssFile = async (config, themeConfig) => {
     updated: new Date(),
   });
   // 加载文章
-  let posts = await createContentLoader("posts/**/*.md", {
+  let posts = await createContentLoader("pages/posts/**/*.md", {
     render: true,
   }).load();
   // 日期降序排序

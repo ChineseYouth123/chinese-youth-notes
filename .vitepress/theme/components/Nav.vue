@@ -5,7 +5,7 @@
         <!-- 导航栏左侧 -->
         <div class="left-nav">
     
-          <div class="site-name" @click="router.go('/')">
+          <div class="site-name" @click="router.go(withBase('/'))">
             {{ site.title }}
           </div>
         </div>
@@ -19,7 +19,7 @@
                   v-for="(child, childIndex) in item.items"
                   :key="childIndex"
                   class="link-child-btn"
-                  @click="router.go(child.link)"
+                  @click="router.go(withBase(child.link))"
                 >
                   <i v-if="child.icon" :class="`iconfont icon-${child.icon}`" />
                   {{ child.text }}
@@ -119,6 +119,7 @@
 </template>
 
 <script setup>
+import { withBase } from "vitepress";
 import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 import { smoothScrolling, shufflePost } from "@/utils/helper";

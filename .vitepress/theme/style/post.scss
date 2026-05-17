@@ -1,5 +1,6 @@
 // 文章内容样式
 :deep(.markdown-main-style) {
+  line-height: 2;
   // 标题
   div > {
     h1 {
@@ -141,7 +142,7 @@
     color: var(--main-font-color);
     .post-img {
       width: auto;
-      max-height: 450px;
+      // max-height: 450px;
       max-width: 100%;
       margin: 0 auto;
       border-radius: 12px;

@@ -39,7 +39,7 @@ npm run format     # Prettier
 - **Do not rename or delete the original file** or override won't apply
 
 ## Content structure
-- `posts/` — blog posts (markdown, frontmatter with `title`, `date`, `tags`, `categories`, `top`, `cover`, `description`)
+- `pages/posts/` — blog posts (markdown, frontmatter with `title`, `date`, `tags`, `categories`, `top`, `cover`, `description`)
 - `pages/` — static pages
 - `page-example/` — dynamic route example for pagination (`[num].paths.mjs`)
 - `public/` — static assets
