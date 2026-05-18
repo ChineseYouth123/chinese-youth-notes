@@ -22,7 +22,6 @@ test.html
 themeConfig.mjs
 !.vitepress/theme/assets/themeConfig.mjs
 
-pages/
 
 # Editor directories and files
 .vscode/*
