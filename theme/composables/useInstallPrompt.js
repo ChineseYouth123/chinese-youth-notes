@@ -25,12 +25,19 @@ function isLocalhost() {
 let deferredPrompt = null;
 const listeners = new Set();
 
+// 模块级响应式状态，供其他组件（如 About.vue）使用
+export const installPromptReady = ref(false);
+export function getDeferredPrompt() {
+  return deferredPrompt;
+}
+
 // 模块级提前捕获，避免在组件 mount 前错过事件
 if (typeof window !== "undefined") {
   window.addEventListener("beforeinstallprompt", (e) => {
     console.log("[useInstallPrompt] beforeinstallprompt captured");
     e.preventDefault();
     deferredPrompt = e;
+    installPromptReady.value = true;
     listeners.forEach((fn) => fn());
   });
 }

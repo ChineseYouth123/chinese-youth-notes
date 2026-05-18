@@ -82,6 +82,39 @@
           </div>
         </div>
       </div>
+
+      <!-- 安装到桌面（仅移动端显示） -->
+      <div class="about-item install-app">
+        <span class="tip">安装到桌面</span>
+        <h3 class="section-title">随时随地，便捷访问</h3>
+        <p class="desc">
+          将本站添加至手机桌面，即可像原生应用一样快速访问，
+          无需每次打开浏览器输入网址，畅享沉浸式阅读体验。
+        </p>
+
+        <div v-if="isStandalone" class="installed-tip">
+          <span class="check-icon">✓</span>
+          已安装到桌面，建议添加到主屏幕以获得更好的浏览体验
+        </div>
+
+        <button v-else-if="installReady" class="install-btn" @click="installApp">
+          安装到桌面
+        </button>
+
+        <div v-else class="manual-steps">
+          <p class="manual-title">当前浏览器暂不支持一键安装，请按以下步骤操作：</p>
+          <div class="steps">
+            <div class="step">
+              <span class="step-num">1</span>
+              <span>打开浏览器菜单（⋮ 或 ⠇）</span>
+            </div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <span>选择「添加到主屏幕」或「安装应用」</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -90,12 +123,18 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, withBase } from 'vitepress'
 import { getStatistics } from '@/api'
+import { installPromptReady, getDeferredPrompt } from '@/composables/useInstallPrompt'
+import { useInstallPrompt } from '@/composables/useInstallPrompt'
 
 const { theme } = useData()
 const router = useRouter()
 
 // 站点统计数据
 const statisticsData = ref(null)
+
+// 安装状态
+const isStandalone = ref(false)
+const installReady = ref(false)
 
 // 获取站点统计数据
 const getStatisticsData = async () => {
@@ -107,12 +146,29 @@ const getStatisticsData = async () => {
   }
 }
 
+// 安装到桌面
+const { install } = useInstallPrompt()
+const installApp = () => install()
+
 // 路由跳转
 const goToArticle = () => router.push(withBase('/articles'))
 const goToDiscussion = () => router.push(withBase('/discussions'))
 
 onMounted(() => {
   getStatisticsData()
+
+  if (typeof window !== 'undefined') {
+    isStandalone.value = !!(
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone
+    )
+    installReady.value = !!getDeferredPrompt()
+  }
+
+  // 监听 beforeinstallprompt（事件可能在 mount 后触发）
+  watch(installPromptReady, (val) => {
+    installReady.value = val
+  })
 })
 </script>
 
@@ -267,6 +323,90 @@ onMounted(() => {
               }
             }
           }
+        }
+      }
+
+      // 安装到桌面样式
+      &.install-app {
+        display: none;
+
+        .installed-tip {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 16px;
+          background: var(--main-success-color-gray);
+          border-radius: 8px;
+          font-size: 0.9rem;
+          color: var(--main-font-color);
+
+          .check-icon {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--main-success-color);
+          }
+        }
+
+        .install-btn {
+          width: 100%;
+          padding: 14px 0;
+          border: none;
+          border-radius: 8px;
+          background: var(--main-color);
+          color: #fff;
+          font-size: 1.05rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: opacity 0.2s;
+
+          &:active {
+            opacity: 0.8;
+          }
+        }
+
+        .manual-steps {
+          .manual-title {
+            font-size: 0.9rem;
+            color: var(--main-font-second-color);
+            margin-bottom: 12px;
+            line-height: 1.6;
+          }
+
+          .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            .step {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              padding: 10px 14px;
+              background: var(--main-site-background);
+              border-radius: 8px;
+              font-size: 0.9rem;
+              color: var(--main-font-color);
+              line-height: 1.5;
+
+              .step-num {
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                background: var(--main-color);
+                color: #fff;
+                font-size: 0.8rem;
+                font-weight: 600;
+              }
+            }
+          }
+        }
+
+        @media (max-width: 768px) {
+          display: flex;
         }
       }
 
