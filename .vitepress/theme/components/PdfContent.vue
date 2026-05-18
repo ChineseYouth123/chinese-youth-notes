@@ -7,10 +7,12 @@
       <div class="post-content">
         <article class="post-article s-card">
           <div v-if="pdfUrl" class="pdf-wrapper">
-            <embed
-              :src="pdfUrl"
-              type="application/pdf"
-              class="pdf-viewer"
+            <PDFViewer
+              :config="{
+                src: pdfUrl,
+                i18n: { defaultLocale: 'zh-CN' },
+              }"
+              :style="{ width: '100%', height: '100%' }"
             />
           </div>
           <div v-else class="not-found">文件未找到</div>
@@ -21,6 +23,12 @@
 </template>
 
 <script setup>
+import { defineAsyncComponent } from "vue";
+
+const PDFViewer = defineAsyncComponent(() =>
+  import("@embedpdf/vue-pdf-viewer").then((m) => m.PDFViewer)
+);
+
 defineProps({
   title: String,
   pdfUrl: String,
@@ -62,11 +70,6 @@ defineProps({
       .pdf-wrapper {
         width: 100%;
         height: 80vh;
-        .pdf-viewer {
-          width: 100%;
-          height: 100%;
-          border: none;
-        }
       }
       .not-found {
         text-align: center;
