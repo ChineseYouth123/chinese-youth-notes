@@ -11,14 +11,36 @@ function enhanceTables() {
 
 function enhanceTable(container) {
   container.classList.add("mobile-enhanced")
+  container.style.position = "relative"
 
   const table = container.querySelector("table")
   if (!table) return
+
+  // wrap table in scroll div so toggle button is not clipped by overflow
+  const scrollWrap = document.createElement("div")
+  scrollWrap.className = "table-scroll"
+  table.parentNode.insertBefore(scrollWrap, table)
+  scrollWrap.appendChild(table)
 
   const headers = parseHeaders(table)
   const rows = parseRows(table)
   if (rows.length === 0) return
 
+  // toggle button (top‑right)
+  const toggle = document.createElement("button")
+  toggle.className = "mobile-table-toggle"
+  toggle.type = "button"
+  toggle.innerHTML = '<i class="iconfont icon-refresh"></i>'
+  toggle.addEventListener("click", () => {
+    if (container.dataset.tableView === "table") {
+      container.dataset.tableView = "cards"
+    } else {
+      container.dataset.tableView = "table"
+    }
+  })
+  container.insertBefore(toggle, scrollWrap)
+
+  // card view
   const cardsEl = document.createElement("div")
   cardsEl.className = "mobile-table-cards"
 
