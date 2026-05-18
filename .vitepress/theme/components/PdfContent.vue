@@ -58,10 +58,10 @@ defineProps({
     animation: fade-up 0.6s 0.3s backwards;
     .post-article {
       flex: 1;
+      width: 100%;
       min-width: 0;
       max-width: var(--content-width, 900px);
       margin: 0 auto;
-      padding: 1rem 2.2rem 2.2rem 2.2rem;
       user-select: text;
       cursor: auto;
       &:hover {

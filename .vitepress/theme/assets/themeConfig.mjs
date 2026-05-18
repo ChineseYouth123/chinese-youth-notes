@@ -17,6 +17,7 @@ export const themeConfig = {
     // 作者
     author: {
       name: "中国青年",
+      github: "https://github.com/ChineseYouth123/",
       // cover: "/images/logo/logo.webp",
       email: "https://www.notion.so/362eedabc59c81b7981fd99666f8fc99?pvs=106",
       link: "https://www.notion.so/362eedabc59c81b7981fd99666f8fc99?pvs=106",
@@ -244,7 +245,7 @@ export const themeConfig = {
       coverLayout: 'both',
       // 默认封面(随机展示)
       defaultCover: [
-        'https://example.com/1.avif',
+        '.vitepress/theme/assets/images/mks.png',
         // 'https://example.com/2.avif',
         // 'https://example.com/3.avif'
       ]
