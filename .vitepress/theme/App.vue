@@ -50,6 +50,8 @@
   <RightMenu ref="rightMenuRef" />
   <!-- 全局消息 -->
   <Message />
+  <!-- 移动端表格卡片优化 -->
+  <MobileTable />
 </template>
 
 <script setup>

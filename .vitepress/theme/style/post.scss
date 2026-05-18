@@ -389,6 +389,80 @@
       }
     }
   }
+  // 移动端表格卡片
+  .mobile-table-cards {
+    display: none;
+    width: 100%;
+    overflow: hidden;
+    padding: 0.5rem 0;
+  }
+  .mobile-table-track {
+    display: flex;
+    touch-action: pan-y;
+  }
+  .mobile-table-card {
+    min-width: 100%;
+    padding: 1rem;
+    background: var(--main-card-background);
+    border: 1px solid var(--main-card-border);
+    border-radius: 12px;
+    box-sizing: border-box;
+    user-select: none;
+  }
+  .mobile-table-field {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--main-card-border);
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  .mobile-table-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--main-color);
+    margin-bottom: 0.15rem;
+    line-height: 1.4;
+  }
+  .mobile-table-value {
+    font-size: 0.9rem;
+    color: var(--main-font-color);
+    line-height: 1.6;
+  }
+  .mobile-table-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+  }
+  .mobile-table-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--main-card-border);
+    cursor: pointer;
+    transition: all 0.3s;
+    &:hover {
+      background: var(--main-color);
+      opacity: 0.6;
+    }
+    &.active {
+      background: var(--main-color);
+      width: 24px;
+      border-radius: 4px;
+    }
+  }
+  @media (max-width: 768px) {
+    .table-container {
+      table {
+        display: none;
+      }
+    }
+    .mobile-table-cards {
+      display: block;
+    }
+  }
   // 分割线
   hr {
     margin: 1rem 0;
