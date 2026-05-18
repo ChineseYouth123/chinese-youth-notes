@@ -50,6 +50,8 @@
   <RightMenu ref="rightMenuRef" />
   <!-- 全局消息 -->
   <Message />
+  <!-- PWA 安装提示 -->
+  <InstallPrompt />
 </template>
 
 <script setup>
@@ -58,6 +60,7 @@ import { mainStore } from "@/store";
 import { calculateScroll, specialDayGray, smoothScrolling } from "@/utils/helper";
 import { useFancybox } from "@/composables/useFancybox";
 import { useCardCopy } from "@/composables/useCardCopy";
+import { useInstallPrompt } from "@/composables/useInstallPrompt";
 
 const route = useRoute();
 const store = mainStore();

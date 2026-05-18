@@ -50,6 +50,8 @@
   <RightMenu ref="rightMenuRef" />
   <!-- 全局消息 -->
   <Message />
+  <!-- PWA 安装提示 -->
+  <InstallPrompt />
   <!-- 移动端表格卡片优化 -->
   <MobileTable />
 </template>

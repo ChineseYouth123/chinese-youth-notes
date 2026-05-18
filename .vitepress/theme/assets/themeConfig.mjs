@@ -245,8 +245,8 @@ export const themeConfig = {
       // 默认封面(随机展示)
       defaultCover: [
         'https://example.com/1.avif',
-        'https://example.com/2.avif',
-        'https://example.com/3.avif'
+        // 'https://example.com/2.avif',
+        // 'https://example.com/3.avif'
       ]
     }
   },
