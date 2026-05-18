@@ -57,6 +57,7 @@ import { storeToRefs } from "pinia";
 import { mainStore } from "@/store";
 import { calculateScroll, specialDayGray, smoothScrolling } from "@/utils/helper";
 import { useFancybox } from "@/composables/useFancybox";
+import { useCardCopy } from "@/composables/useCardCopy";
 
 const route = useRoute();
 const store = mainStore();
@@ -183,6 +184,8 @@ onMounted(() => {
   console.log("[onMounted] App mounted, registering contextmenu listener");
   // 图片灯箱
   useFancybox();
+  // 卡片长按复制
+  useCardCopy();
   // 全站置灰
   specialDayGray();
   // 更改主题类别

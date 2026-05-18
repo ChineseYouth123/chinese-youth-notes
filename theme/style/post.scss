@@ -667,6 +667,11 @@
       &:last-child {
         margin-bottom: 0;
       }
+      &.card-copied {
+        background-color: var(--main-color-bg);
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
     }
   }
   // button
