@@ -400,7 +400,7 @@
     z-index: 5;
     width: 32px;
     height: 32px;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     border: none;
@@ -409,6 +409,9 @@
     cursor: pointer;
     opacity: 0.75;
     transition: opacity 0.25s;
+    @media (max-width: 768px) {
+      display: flex;
+    }
     &:hover {
       opacity: 1;
     }
