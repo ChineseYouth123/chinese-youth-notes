@@ -4,6 +4,8 @@
 
 基于 VitePress 构建的马列毛思想学习与交流站点。提供经典文献、学习笔记、资料汇编等内容。
 
+🌐 在线访问：<https://chineseyouth123.github.io/chinese-youth-notes/>
+
 ## 目录结构
 
 ```
