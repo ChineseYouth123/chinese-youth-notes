@@ -245,7 +245,7 @@ export const themeConfig = {
       coverLayout: 'both',
       // 默认封面(随机展示)
       defaultCover: [
-        '.vitepress/theme/assets/images/mks.png',
+        '/images/logo/mks.png',
         // 'https://example.com/2.avif',
         // 'https://example.com/3.avif'
       ]

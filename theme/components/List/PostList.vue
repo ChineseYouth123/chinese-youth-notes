@@ -91,11 +91,13 @@ const getCover = ({ cover: itemCover }) => {
   const { cover } = themeConfig.value ?? {}
   
   if (!cover?.showCover?.enable) return false
-  if (itemCover) return itemCover
+  if (itemCover) return withBase(itemCover)
   
-  return Array.isArray(cover.showCover.defaultCover) 
+  const fallback = Array.isArray(cover.showCover.defaultCover)
     ? cover.showCover.defaultCover[Math.floor(Math.random() * cover.showCover.defaultCover.length)]
     : false
+  
+  return fallback ? withBase(fallback) : false
 }
 
 // 前往文章
