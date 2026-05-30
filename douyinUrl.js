@@ -11,7 +11,6 @@ const __dirname = path.dirname(__filename);
  * 解析 Markdown 表格行 → 数组
  */
 function parseTableRow(row) {
-  // 移除首尾的 |，然后按 | 分割，并去除每个单元格的空白
   return row.trim().replace(/^\||\|$/g, '').split('|').map(cell => cell.trim());
 }
 
@@ -33,10 +32,9 @@ function extractDouyinInfo(text) {
   const links = text.match(linkRegex) || [];
   const shortLink = links[0] || '';
 
-  // 如果没有链接，直接返回 null，避免后续无效处理
   if (!shortLink) return null;
 
-  // 2. 提取 #标签 并格式化为 <code> 形式（Markdown 兼容）
+  // 2. 提取 #标签
   const tagRegex = /#\s*([^\s#]+)/g;
   const tags = [...text.matchAll(tagRegex)].map(m => m[1].trim());
   const categoryHtml = tags.length > 0
@@ -44,19 +42,18 @@ function extractDouyinInfo(text) {
     : '未分类';
 
   // 3. 精准提取纯净标题
-  // 策略：从第一个中文字符开始截取，直到遇到 # 或 http 链接为止
   const titleMatch = text.match(/([\u4e00-\u9fa5][\s\S]*?)(?=\s*#|\s*https?|$)/);
   let title = titleMatch ? titleMatch[1].trim() : '';
 
-  // 清理残余噪声
+  // 清理噪声
   title = title
     .replace(/复制此链接.*$/g, '')
-    .replace(/^[^\u4e00-\u9fa5\w]+/, '') // 移除首部乱码
-    .replace(/[^\u4e00-\u9fa5\w]+$/, '') // 移除尾部乱码
+    .replace(/^[^\u4e00-\u9fa5\w]+/, '') 
+    .replace(/[^\u4e00-\u9fa5\w]+$/, '') 
     .replace(/\s+/g, ' ')
     .trim();
 
-  // 智能截断（优先在中文标点处断开，防表格过宽）
+  // 智能截断
   if (title.length > 40) {
     const punctIdx = title.search(/[，。！？、]/);
     title = punctIdx > 0 && punctIdx < 40 
@@ -74,20 +71,17 @@ function extractDouyinInfo(text) {
 }
 
 /**
- * 判断一行是否是表格分隔线 (Separator Line)
- * 例如: |---|---| 或 |:---|---:|
+ * 判断一行是否是表格分隔线
  */
 function isSeparatorLine(line) {
   const trimmed = line.trim();
   if (!trimmed.startsWith('|') || !trimmed.endsWith('|')) return false;
-  // 检查内部是否只包含 -, :, 空格和 |
   const inner = trimmed.slice(1, -1);
   return /^[\s\-:|]+$/.test(inner);
 }
 
 /**
  * 解析 Markdown 中的所有表格
- * 返回结构: [{ headers, rows, startLineIndex, endLineIndex, bodyLinesRef }]
  */
 function findAllTables(content) {
   const lines = content.split('\n');
@@ -97,32 +91,25 @@ function findAllTables(content) {
   while (i < lines.length) {
     const line = lines[i];
     
-    // 1. 寻找潜在的分隔线 (Separator)
     if (isSeparatorLine(line)) {
-      // 2. 向上寻找 Header 行
       let headerIdx = i - 1;
       while (headerIdx >= 0 && !lines[headerIdx].trim().startsWith('|')) {
         headerIdx--;
       }
       
-      // 如果没找到 Header 或者 Header 不在上一行（中间有空行或非表格内容），则跳过
       if (headerIdx < 0 || headerIdx !== i - 1) {
         i++;
         continue;
       }
 
       const headerLine = lines[headerIdx];
-      const separatorLine = lines[i];
       
-      // 3. 向下寻找数据行，直到遇到非表格行
       let dataEndIdx = i + 1;
       while (dataEndIdx < lines.length && lines[dataEndIdx].trim().startsWith('|')) {
-        // 如果遇到另一个分隔线，说明当前表格结束，新表格开始（虽然少见，但需处理）
         if (isSeparatorLine(lines[dataEndIdx])) break;
         dataEndIdx++;
       }
       
-      // 4. 构建表格对象
       const headers = parseTableRow(headerLine);
       const tableRows = [];
       
@@ -131,12 +118,13 @@ function findAllTables(content) {
         if (!rowLine.startsWith('|')) continue;
         
         const cells = parseTableRow(rowLine);
-        // 简单校验：单元格数量应与表头一致（允许误差，但最好一致）
+        // 允许单元格数量略多于表头（防止因分割错误导致错位，但通常应一致）
+        // 这里严格匹配长度以确保映射正确
         if (cells.length === headers.length) {
           const rowObj = {};
           headers.forEach((h, idx) => rowObj[h.trim()] = cells[idx] || '');
-          rowObj._lineIndex = j;       // 原始行号
-          rowObj._cells = cells;       // 原始单元格数组
+          rowObj._lineIndex = j;       
+          rowObj._cells = cells;       
           tableRows.push(rowObj);
         }
       }
@@ -145,13 +133,12 @@ function findAllTables(content) {
         tables.push({
           headers,
           rows: tableRows,
-          startLineIndex: headerIdx,   // 表头起始行
-          endLineIndex: dataEndIdx - 1, // 最后一行数据索引
-          originalLines: lines         // 引用原始行数组，用于修改
+          startLineIndex: headerIdx,   
+          endLineIndex: dataEndIdx - 1, 
+          originalLines: lines         
         });
       }
       
-      // 跳转到表格结束后的下一行继续搜索
       i = dataEndIdx;
     } else {
       i++;
@@ -162,116 +149,272 @@ function findAllTables(content) {
 }
 
 /**
- * 主函数：读取 → 解析所有表格 → 填充 → 写回 Markdown
- * @param {string} filePath 
- * @param {string|null} outputPath 
- * @param {object} config - 配置项，如列名映射
+ * 处理单个文件：读取 -> 解析 -> 填充 -> 加序号 -> 写回
  */
 function fillBlogTable(filePath, outputPath = null, config = {}) {
   const defaultConfig = {
     sourceCol: '完整链接',   // 源数据列名
-    targetCols: {            // 目标列名映射: { 目标列名: 提取字段名 }
+    seqCol: '序号',         // 序号列名
+    targetCols: {            // 目标列名映射
       '分类': 'category',
       'url标题': 'title',
       '链接': 'shortLink'
-    }
+    },
+    addSeqIfMissing: true   // 如果表中没有序号列，是否自动添加
   };
   
   const cfg = { ...defaultConfig, ...config };
   
   if (!fs.existsSync(filePath)) {
     console.error(`❌ 文件不存在: ${filePath}`);
-    process.exit(1);
+    return null;
   }
 
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   const { data: frontmatter, content: body, emptySeparator } = matter(fileContent);
   
-  console.log('📋 读取文件:', filePath);
-  
   // 1. 查找所有表格
   const tables = findAllTables(body);
   
   if (tables.length === 0) {
-    console.warn('⚠️ 未找到任何有效的 Markdown 表格');
-    return { filledCount: 0 };
+    // console.warn(`⚠️ [${path.basename(filePath)}] 未找到有效表格`);
+    return { filledCount: 0, skipped: true };
   }
   
-  console.log(`🔍 发现 ${tables.length} 个表格`);
-  
   let totalFilledCount = 0;
-  const bodyLines = body.split('\n'); // 我们将基于这个数组进行修改
+  const bodyLines = body.split('\n'); 
 
-  // 2. 遍历每个表格进行处理
+  // 2. 遍历每个表格
   tables.forEach((table, tableIdx) => {
-    console.log(`\n--- 处理第 ${tableIdx + 1} 个表格 (行 ${table.startLineIndex + 1}-${table.endLineIndex + 1}) ---`);
-    
     const { headers, rows } = table;
     
-    // 确定列索引
-    const sourceColIndex = headers.indexOf(cfg.sourceCol);
-    if (sourceColIndex === -1) {
-      console.log(`ℹ️ 跳过表格 ${tableIdx + 1}: 缺少源列 [${cfg.sourceCol}]`);
+    // --- 步骤 A: 处理序号列 ---
+    let seqColIndex = headers.indexOf(cfg.seqCol);
+    let hasSeqCol = seqColIndex !== -1;
+
+    // 如果需要添加序号列且当前没有
+    if (!hasSeqCol && cfg.addSeqIfMissing) {
+      // 1. 修改表头：在最前面插入 "序号"
+      const newHeaders = [cfg.seqCol, ...headers];
+      bodyLines[table.startLineIndex] = buildTableRow(newHeaders);
+      
+      // 2. 修改分隔线：在最前面插入 "---"
+      // 找到对应的分隔线行 (startLineIndex + 1)
+      const sepLineIdx = table.startLineIndex + 1;
+      if (sepLineIdx < bodyLines.length && isSeparatorLine(bodyLines[sepLineIdx])) {
+         const oldSepCells = parseTableRow(bodyLines[sepLineIdx]);
+         const newSepCells = ['---', ...oldSepCells];
+         bodyLines[sepLineIdx] = buildTableRow(newSepCells);
+      }
+
+      // 3. 更新内存中的 headers 引用，以便后续逻辑使用新的索引
+      // 注意：此时 bodyLines 已经改变，但 table.headers 还是旧的，我们需要手动维护逻辑
+      // 为了简化，我们重新计算索引，或者在后续循环中动态调整
+      
+      // 标记已添加，并更新局部变量
+      hasSeqCol = true;
+      seqColIndex = 0; // 新加的在第一列
+      
+      // 重要：因为我们在 bodyLines 中插入了列，现有的 row._cells 需要扩容
+      // 但更简单的方法是：我们在生成最终行字符串时，手动拼接序号
+    }
+
+    // --- 步骤 B: 确定源列和目标列索引 ---
+    // 如果刚才添加了序号列，headers 数组在内存中没变，但实际文件变了。
+    // 为了稳健，我们基于当前的 headers (原始解析的) 来查找源列。
+    // 如果添加了序号列，源列的实际物理索引会 +1。
+    
+    const sourceColIndexInHeader = headers.indexOf(cfg.sourceCol);
+    if (sourceColIndexInHeader === -1) {
+      // console.log(`ℹ️ 跳过表格: 缺少源列 [${cfg.sourceCol}]`);
       return;
     }
 
+    // 计算实际在 bodyLines 行中的索引
+    // 如果添加了序号列，所有原有列的索引都 +1
+    const offset = (hasSeqCol && cfg.addSeqIfMissing && seqColIndex === 0 && headers.indexOf(cfg.seqCol) === -1) ? 1 : 0;
+    const actualSourceIdx = sourceColIndexInHeader + offset;
+
     let tableFilledCount = 0;
+    let currentSeq = 1; // 序号计数器
 
     for (const row of rows) {
-      const fullText = row[cfg.sourceCol] || '';
-      if (!fullText.trim()) continue;
+      // 获取源文本
+      // 注意：row._cells 是解析时的旧数据。如果表结构变了（加了列），row._cells 长度不对。
+      // 最安全的方式：直接从 bodyLines 重新解析该行，或者依赖 row._cells 并在输出时修正。
+      // 鉴于我们只修改内容不删除行，且只在头部加列，我们可以这样处理：
+      
+      let fullText = '';
+      if (offset === 0) {
+        fullText = row[cfg.sourceCol] || '';
+      } else {
+        // 如果加了列，row 对象里的 key 还是旧的 header name，所以可以直接用 key 取值
+        fullText = row[cfg.sourceCol] || '';
+      }
+
+      if (!fullText.trim()) {
+        currentSeq++; // 即使空行也占一个序号？通常不需要，看需求。这里假设空行不计数或保持原样。
+        // 如果希望空行也有序号，取消下面的 continue 前的 currentSeq++ 逻辑调整
+        continue; 
+      }
 
       const info = extractDouyinInfo(fullText);
-      if (!info) continue; // 没有提取到有效信息
+      if (!info) {
+        currentSeq++;
+        continue; 
+      }
 
-      const newCells = [...row._cells];
-      let hasChange = false;
+      // 构建新行单元格
+      // 1. 获取原始单元格副本
+      let newCells = [...row._cells];
+      
+      // 2. 如果之前添加了序号列，需要在数组最前面插入序号
+      if (offset === 1) {
+        newCells.unshift(String(currentSeq));
+      } else if (hasSeqCol) {
+        // 如果原本就有序号列，更新它
+        newCells[seqColIndex] = String(currentSeq);
+      }
 
-      // 根据配置映射填充目标列
+      // 3. 填充其他目标列
+      // 注意：如果 offset=1，目标列的物理索引也要 +1
       for (const [targetHeader, fieldKey] of Object.entries(cfg.targetCols)) {
-        const targetIdx = headers.indexOf(targetHeader);
-        if (targetIdx !== -1 && info[fieldKey]) {
-          newCells[targetIdx] = info[fieldKey];
-          hasChange = true;
+        const targetIdxInHeader = headers.indexOf(targetHeader);
+        if (targetIdxInHeader !== -1 && info[fieldKey]) {
+          const actualTargetIdx = targetIdxInHeader + offset;
+          // 确保数组长度足够（防止越界，虽然理论上应该一致）
+          if (actualTargetIdx < newCells.length) {
+             newCells[actualTargetIdx] = info[fieldKey];
+          }
         }
       }
 
-      if (hasChange) {
-        // 更新内存中的行内容
-        bodyLines[row._lineIndex] = buildTableRow(newCells);
-        tableFilledCount++;
-        console.log(`✅ [行 ${row._lineIndex + 1}] 标题: ${info.title.substring(0, 15)}...`);
-      }
+      // 4. 更新行
+      bodyLines[row._lineIndex] = buildTableRow(newCells);
+      
+      tableFilledCount++;
+      currentSeq++;
     }
     
     totalFilledCount += tableFilledCount;
-    console.log(`📊 表格 ${tableIdx + 1} 完成: 填充 ${tableFilledCount} 行`);
   });
 
-  // 3. 重新组合内容并写入
+  if (totalFilledCount === 0) {
+     return { filledCount: 0, skipped: true };
+  }
+
+  // 3. 写回文件
   const newBody = bodyLines.join('\n');
   const newContent = matter.stringify(newBody, frontmatter, {
     delimiters: emptySeparator ? ['---', '---'] : undefined
   });
 
-  const targetPath = outputPath || filePath.replace('.md', '.filled.md');
+  const targetPath = outputPath || filePath; // 默认覆盖原文件，或者你可以改为 .filled.md
   fs.writeFileSync(targetPath, newContent, 'utf-8');
   
-  console.log(`\n🎉 全部完成！共填充 ${totalFilledCount} 行\n💾 输出: ${targetPath}`);
   return { filledCount: totalFilledCount, outputPath: targetPath };
 }
 
-// ============ 执行入口 ============
+/**
+ * 递归获取目录下所有 .md 文件
+ */
+function getAllMdFiles(dirPath, arrayOfFiles = []) {
+  const files = fs.readdirSync(dirPath);
+
+  files.forEach(function(file) {
+    const fullPath = path.join(dirPath, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      arrayOfFiles = getAllMdFiles(fullPath, arrayOfFiles);
+    } else {
+      if (file.endsWith('.md')) {
+        arrayOfFiles.push(fullPath);
+      }
+    }
+  });
+
+  return arrayOfFiles;
+}
+
+/**
+ * 主入口：处理文件或文件夹
+ */
+function main() {
+  const targetPath = process.argv[2] || './blogs'; // 默认当前目录下的 blogs 文件夹或文件
+  const customOutputDir = process.argv[3]; // 可选：指定输出目录，如果不指定则覆盖原文件
+
+  if (!fs.existsSync(targetPath)) {
+    console.error(`❌ 路径不存在: ${targetPath}`);
+    process.exit(1);
+  }
+
+  const stats = fs.statSync(targetPath);
+  let filesToProcess = [];
+
+  if (stats.isDirectory()) {
+    console.log(`📂 扫描目录: ${targetPath}`);
+    filesToProcess = getAllMdFiles(targetPath);
+  } else {
+    filesToProcess = [targetPath];
+  }
+
+  if (filesToProcess.length === 0) {
+    console.log('ℹ️ 没有找到任何 .md 文件');
+    return;
+  }
+
+  console.log(`🚀 开始处理 ${filesToProcess.length} 个文件...\n`);
+
+  let totalGlobalFilled = 0;
+  let successCount = 0;
+  let skipCount = 0;
+
+  filesToProcess.forEach((filePath, index) => {
+    console.log(`[${index + 1}/${filesToProcess.length}] 处理: ${path.basename(filePath)}`);
+    
+    let outPath = filePath;
+    if (customOutputDir) {
+      // 如果指定了输出目录，保持相对路径结构
+      const relativePath = path.relative(path.dirname(targetPath), filePath);
+      outPath = path.join(customOutputDir, relativePath);
+      // 确保输出目录存在
+      fs.mkdirSync(path.dirname(outPath), { recursive: true });
+    }
+
+    try {
+      const result = fillBlogTable(filePath, outPath);
+      if (result && !result.skipped) {
+        totalGlobalFilled += result.filledCount;
+        successCount++;
+        console.log(`   ✅ 完成: 填充 ${result.filledCount} 行\n`);
+      } else {
+        skipCount++;
+        console.log(`   ⏭️  跳过: 无有效数据或表格\n`);
+      }
+    } catch (err) {
+      console.error(`   ❌ 失败: ${err.message}`);
+    }
+  });
+
+  console.log('\n========================================');
+  console.log(`🎉 全部任务结束！`);
+  console.log(`📊 统计: 成功 ${successCount} 个文件, 跳过 ${skipCount} 个文件`);
+  console.log(`📝 总共填充行数: ${totalGlobalFilled}`);
+  if (customOutputDir) {
+    console.log(`💾 输出目录: ${customOutputDir}`);
+  } else {
+    console.log(`💾 模式: 覆盖原文件`);
+  }
+  console.log('========================================');
+}
+
+// 执行
 const isMain = process.argv[1] === fileURLToPath(import.meta.url);
 if (isMain) {
-  const targetFile = process.argv[2] || './blog.md';
-  try { 
-    fillBlogTable(targetFile, process.argv[3]); 
-  } 
-  catch (err) { 
-    console.error('❌ 处理失败:', err.message); 
-    console.error(err.stack);
-    process.exit(1); 
+  try {
+    main();
+  } catch (err) {
+    console.error('❌ 程序异常:', err);
+    process.exit(1);
   }
 }
 
