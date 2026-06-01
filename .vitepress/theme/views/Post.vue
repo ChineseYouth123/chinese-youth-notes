@@ -100,17 +100,26 @@
 </template>
 
 <script setup>
-import { withBase } from "vitepress";
+import { withBase, useRoute } from "vitepress";
 import { formatTimestamp } from "@/utils/helper";
 import { generateId } from "@/utils/commonTools";
 
 const { page, theme, frontmatter } = useData();
+const route = useRoute();
 
 // 评论元素
 const commentRef = ref(null);
 
-// 获取对应文章数据
+// 获取对应文章数据（支持 posts 和 materials）
 const postMetaData = computed(() => {
+  const routePath = decodeURIComponent(route.path);
+  // 资料详情页在 materialsData 中查找
+  if (/^\/pages\/library\/materials\/[^/]+$/.test(routePath)) {
+    const fileName = routePath.split("/").pop();
+    const regularPath = `/pages/library/materials/${encodeURIComponent(fileName)}`;
+    return theme.value.materialsData?.find((item) => item.regularPath === regularPath) || null;
+  }
+  // 博客文章在 postData 中查找
   const postId = generateId(page.value.relativePath);
   return theme.value.postData.find((item) => item.id === postId);
 });

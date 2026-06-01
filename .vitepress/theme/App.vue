@@ -71,10 +71,11 @@ const { loadingStatus, footerIsShow, themeValue, themeType, backgroundType, font
 // 右键菜单
 const rightMenuRef = ref(null);
 
-// 判断是否为文章页面
+// 判断是否为文章页面（包括资料详情页）
 const isPostPage = computed(() => {
   const routePath = decodeURIComponent(route.path);
-  return routePath.includes("/pages/posts/");
+  return routePath.includes("/pages/posts/")
+    || /^\/pages\/library\/materials\/[^/]+$/.test(routePath);
 });
 
 // 开启右键菜单

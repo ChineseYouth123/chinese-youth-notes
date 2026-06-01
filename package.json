@@ -24,6 +24,7 @@
     "deploy:vercel": "vercel deploy"
   },
   "devDependencies": {
+    "@types/three": "^0.184.1",
     "cheerio": "1.0.0-rc.12",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -59,6 +60,7 @@
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^3.2.3",
     "pinyin": "^4.0.0",
+    "three": "^0.184.0",
     "vue": "^3.5.13",
     "vue-instantsearch": "^4.20.1",
     "vue-slider-component": "4.1.0-beta.7"

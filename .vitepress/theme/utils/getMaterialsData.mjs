@@ -1,6 +1,7 @@
 import { globby } from "globby";
 import matter from "gray-matter";
 import fs from "fs-extra";
+import { generateId } from "./commonTools.mjs";
 
 export const getAllMaterials = async () => {
   const mdPaths = await globby(["pages/library/materials/*.md"], {
@@ -20,9 +21,11 @@ export const getAllMaterials = async () => {
       const fileName = path.split("/").pop().replace(/\.md$/, "");
       const cats = data.categories;
       return {
+        id: generateId(path),
         regularPath: `/pages/library/materials/${encodeURIComponent(fileName)}`,
         title: data.title || fileName,
         date: data.date ? new Date(data.date).getTime() : null,
+        lastModified: (await fs.stat(path)).mtimeMs,
         tags: data.tags || [],
         categories: Array.isArray(cats) ? cats : cats ? [cats] : [],
         description: data.description || "",
