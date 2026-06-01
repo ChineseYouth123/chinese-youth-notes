@@ -381,7 +381,7 @@ const buildMesh = async (svgText) => {
   }
 
   if (props.compact) {
-    meshGroup.rotation.y = Math.PI;
+    meshGroup.rotation.x = Math.PI;
   }
 
   // Auto-fit camera

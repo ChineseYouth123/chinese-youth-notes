@@ -3,7 +3,7 @@ export const themeConfig = {
   // 站点信息
   siteMeta: {
     // 站点标题
-    title: "东方红",
+    title: "起点",
     // 站点描述
     description: "让我们一起团结合作！一起创造更美好的未来！",
     // 站点logo
