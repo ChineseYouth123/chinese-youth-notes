@@ -163,6 +163,7 @@ const changeMdPreviewStyle = () => {
 const changeContentWidth = () => {
   const htmlElement = document.documentElement;
   htmlElement.style.setProperty("--content-width", contentWidth.value + "px");
+  htmlElement.style.setProperty("height", "100%");
 };
 
 // 监听设置变化
@@ -217,7 +218,7 @@ onBeforeUnmount(() => {
 .mian-layout {
   width: 100%;
   max-width: 1400px;
-  // height: calc(100% - 60px - 75px);
+  min-height: calc(100% - 60px - 85px);
   margin: 0 auto;
   padding: 1rem 2rem;
   // 手动实现加载动画

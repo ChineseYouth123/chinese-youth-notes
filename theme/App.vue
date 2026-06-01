@@ -219,7 +219,7 @@ onBeforeUnmount(() => {
 .mian-layout {
   width: 100%;
   max-width: 1400px;
-  // height: calc(100% - 60px - 75px);
+  min-height: calc(100% - 60px - 85px);
   margin: 0 auto;
   padding: 1rem 2rem;
   // 手动实现加载动画
