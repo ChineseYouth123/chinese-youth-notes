@@ -114,7 +114,7 @@ const commentRef = ref(null);
 const postMetaData = computed(() => {
   const routePath = decodeURIComponent(route.path);
   // 资料详情页在 materialsData 中查找
-  if (/^\/pages\/library\/materials\/[^/]+$/.test(routePath)) {
+  if (/\/pages\/library\/materials\/[^/]+$/.test(routePath)) {
     const fileName = routePath.split("/").pop();
     const regularPath = `/pages/library/materials/${encodeURIComponent(fileName)}`;
     const found = theme.value.materialsData?.find((item) => item.regularPath === regularPath);

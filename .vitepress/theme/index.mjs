@@ -4,6 +4,7 @@ import { routeChange } from "@/utils/initTools.mjs";
 import { enhanceAppWithTabs } from "vitepress-plugin-tabs/client";
 import LazyLoader from "@/components/LazyLoader.vue";
 import MobileTable from "@/components/MobileTable.vue";
+import MarkdownPreview from "@/components/MarkdownPreview.vue";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 // 根组件
@@ -30,6 +31,7 @@ const Theme = {
     app.use(InstantSearch);
     app.component("LazyLoader", LazyLoader);
     app.component("MobileTable", MobileTable);
+    app.component("MarkdownPreview", MarkdownPreview);
     // 插件
     enhanceAppWithTabs(app);
     // 路由守卫

@@ -75,7 +75,7 @@ const rightMenuRef = ref(null);
 const isPostPage = computed(() => {
   const routePath = decodeURIComponent(route.path);
   return routePath.includes("/pages/posts/")
-    || /^\/pages\/library\/materials\/[^/]+$/.test(routePath);
+    || /\/pages\/library\/materials\/[^/]+$/.test(routePath);
 });
 
 // 开启右键菜单

@@ -7,7 +7,7 @@
         <!-- 分类总览 -->
         <TypeBar :type="showTags ? 'tags' : 'categories'" />
         <!-- 文章列表 -->
-        <PostList :listData="postData" />
+        <ContentPreview :data="postData" :showCategories="false" :showTags="false" :showAside="false" :showPagination="false" />
         <!-- 分页 -->
         <Pagination
           :total="allListTotal"
