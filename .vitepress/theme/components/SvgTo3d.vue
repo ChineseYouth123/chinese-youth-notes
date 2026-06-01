@@ -357,10 +357,7 @@ const buildMesh = async (svgText) => {
       const m = new THREE.Mesh(g, material);
       m.castShadow = !props.compact;
       m.receiveShadow = !props.compact;
-      if (props.compact) {
-        m.scale.set(0.08, 0.08, 0.5);
-        m.rotation.y = Math.PI;
-      }
+      if (props.compact) m.scale.set(0.08, 0.08, 0.5);
       meshGroup.add(m);
       shapeCount++;
     } else if (subCount === 1) {
@@ -370,10 +367,7 @@ const buildMesh = async (svgText) => {
         const m = new THREE.Mesh(g, material);
         m.castShadow = !props.compact;
         m.receiveShadow = !props.compact;
-        if (props.compact) {
-          m.scale.set(0.08, 0.08, 0.5);
-          m.rotation.y = Math.PI;
-        }
+        if (props.compact) m.scale.set(0.08, 0.08, 0.5);
         meshGroup.add(m);
         shapeCount++;
       });
@@ -384,6 +378,10 @@ const buildMesh = async (svgText) => {
     svgLoaded.value = false;
     $message?.warning?.("No fill paths found in SVG");
     return;
+  }
+
+  if (props.compact) {
+    meshGroup.rotation.y = Math.PI;
   }
 
   // Auto-fit camera
