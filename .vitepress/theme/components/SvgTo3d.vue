@@ -142,9 +142,9 @@ const zoomText = computed(() => `${Math.round(zoomLevel.value)}%`);
 let initialCamDist = 0;
 
 const compactDefaults = {
-  depth: 4,
-  bevelThickness: 0.4,
-  bevelSize: 0.2,
+  depth: 8,
+  bevelThickness: 0.6,
+  bevelSize: 0.3,
   bevelSegments: 2,
 };
 
