@@ -142,9 +142,9 @@ const zoomText = computed(() => `${Math.round(zoomLevel.value)}%`);
 let initialCamDist = 0;
 
 const compactDefaults = {
-  depth: 8,
-  bevelThickness: 0.6,
-  bevelSize: 0.3,
+  depth: 12,
+  bevelThickness: 0.8,
+  bevelSize: 0.4,
   bevelSegments: 2,
 };
 
@@ -154,8 +154,8 @@ const settings = reactive({
   bevelSize: props.compact ? compactDefaults.bevelSize : 0.5,
   bevelSegments: props.compact ? compactDefaults.bevelSegments : 3,
   color: "#c5a84e",
-  metalness: 0.85,
-  roughness: 0.25,
+  metalness: 0.97,
+  roughness: 0.18,
 });
 
 const containerStyle = computed(() => {
@@ -247,7 +247,7 @@ const initThree = async () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, props.compact ? 2.5 : 2);
+  const dirLight = new THREE.DirectionalLight(0xffffff, props.compact ? 3.5 : 2);
   dirLight.position.set(10, 20, 10);
   dirLight.castShadow = !props.compact;
   scene.add(dirLight);
@@ -312,7 +312,7 @@ const buildMesh = async (svgText) => {
     metalness: settings.metalness,
     roughness: settings.roughness,
     emissive: new THREE.Color(settings.color),
-    emissiveIntensity: props.compact ? 0.35 : 0.15,
+    emissiveIntensity: props.compact ? 0.6 : 0.2,
     envMapIntensity: 1.0,
     clearcoat: 0.15,
     clearcoatRoughness: 0.2,
@@ -357,7 +357,7 @@ const buildMesh = async (svgText) => {
       const m = new THREE.Mesh(g, material);
       m.castShadow = !props.compact;
       m.receiveShadow = !props.compact;
-      if (props.compact) m.scale.set(0.08, 0.08, 0.08);
+      if (props.compact) m.scale.set(0.08, 0.08, 0.5);
       meshGroup.add(m);
       shapeCount++;
     } else if (subCount === 1) {
@@ -367,7 +367,7 @@ const buildMesh = async (svgText) => {
         const m = new THREE.Mesh(g, material);
         m.castShadow = !props.compact;
         m.receiveShadow = !props.compact;
-        if (props.compact) m.scale.set(0.08, 0.08, 0.08);
+        if (props.compact) m.scale.set(0.08, 0.08, 0.5);
         meshGroup.add(m);
         shapeCount++;
       });
