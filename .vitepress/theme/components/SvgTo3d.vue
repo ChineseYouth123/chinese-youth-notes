@@ -142,9 +142,9 @@ const zoomText = computed(() => `${Math.round(zoomLevel.value)}%`);
 let initialCamDist = 0;
 
 const compactDefaults = {
-  depth: 0.5,
-  bevelThickness: 0.1,
-  bevelSize: 0.05,
+  depth: 3,
+  bevelThickness: 0.3,
+  bevelSize: 0.15,
   bevelSegments: 2,
 };
 
@@ -153,9 +153,9 @@ const settings = reactive({
   bevelThickness: props.compact ? compactDefaults.bevelThickness : 1,
   bevelSize: props.compact ? compactDefaults.bevelSize : 0.5,
   bevelSegments: props.compact ? compactDefaults.bevelSegments : 3,
-  color: "#f6ef37",
-  metalness: 0.3,
-  roughness: 0.6,
+  color: "#ffd700",
+  metalness: 0.95,
+  roughness: 0.15,
 });
 
 const containerStyle = computed(() => {
@@ -227,10 +227,10 @@ const initThree = async () => {
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(w, h);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !props.compact;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.2;
+  renderer.toneMappingExposure = props.compact ? 1.5 : 1.2;
   container.appendChild(renderer.domElement);
 
   controls = new OrbitControls(camera, renderer.domElement);
@@ -247,9 +247,9 @@ const initThree = async () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 2);
+  const dirLight = new THREE.DirectionalLight(0xffffff, props.compact ? 2.5 : 2);
   dirLight.position.set(10, 20, 10);
-  dirLight.castShadow = true;
+  dirLight.castShadow = !props.compact;
   scene.add(dirLight);
 
   const fillLight = new THREE.DirectionalLight(0x4488ff, 0.6);
@@ -301,7 +301,21 @@ const buildMesh = async (svgText) => {
   const shapes = [];
   svgData.paths.forEach((path) => {
     const pathShapes = path.toShapes(true);
-    pathShapes.forEach((s) => shapes.push(s));
+    if (pathShapes.length === 2) {
+      const b0 = new THREE.Box2().setFromPoints(pathShapes[0].getPoints(5));
+      const b1 = new THREE.Box2().setFromPoints(pathShapes[1].getPoints(5));
+      if (b0.containsBox(b1)) {
+        pathShapes[0].holes.push(pathShapes[1]);
+        shapes.push(pathShapes[0]);
+      } else if (b1.containsBox(b0)) {
+        pathShapes[1].holes.push(pathShapes[0]);
+        shapes.push(pathShapes[1]);
+      } else {
+        shapes.push(...pathShapes);
+      }
+    } else {
+      pathShapes.forEach((s) => shapes.push(s));
+    }
   });
 
   if (!shapes.length) {
@@ -326,15 +340,17 @@ const buildMesh = async (svgText) => {
     color: settings.color,
     metalness: settings.metalness,
     roughness: settings.roughness,
-    envMapIntensity: 0.6,
-    clearcoat: 0.1,
-    clearcoatRoughness: 0.3,
+    emissive: new THREE.Color(settings.color),
+    emissiveIntensity: props.compact ? 0.35 : 0.15,
+    envMapIntensity: 1.0,
+    clearcoat: 0.15,
+    clearcoatRoughness: 0.2,
     side: THREE.DoubleSide,
   });
 
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
+  mesh.castShadow = !props.compact;
+  mesh.receiveShadow = !props.compact;
 
   if (props.compact) {
     mesh.scale.set(0.08, 0.08, 0.08);
