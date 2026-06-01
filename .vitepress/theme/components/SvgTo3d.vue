@@ -25,6 +25,9 @@
     <!-- 3D Canvas -->
     <div ref="canvasRef" v-show="canvasReady" class="canvas-container" />
 
+    <!-- Zoom indicator -->
+    <div v-if="canvasReady" class="zoom-level">{{ zoomText }}</div>
+
     <!-- Control panel -->
     <Transition name="slide-up">
       <div v-if="!compact && svgLoaded" class="control-panel">
@@ -133,6 +136,9 @@ const svgLoaded = ref(false);
 const canvasReady = ref(false);
 const panelOpen = ref(false);
 const autoRotate = ref(true);
+const zoomLevel = ref(100);
+
+const zoomText = computed(() => `${Math.round(zoomLevel.value)}%`);
 
 const compactDefaults = {
   depth: 1.5,
@@ -232,7 +238,7 @@ const initThree = async () => {
   controls.minDistance = 3;
   controls.maxDistance = 100;
   controls.enablePan = !props.compact;
-  controls.enableZoom = !props.compact;
+  controls.enableZoom = true;
   controls.rotateSpeed = props.compact ? 0.5 : 1;
   controls.update();
 
@@ -267,6 +273,9 @@ const animate = () => {
   if (controls) {
     controls.autoRotate = autoRotate.value;
     controls.update();
+    const dist = camera.position.distanceTo(controls.target);
+    const baseDist = props.compact ? 7 : 30;
+    zoomLevel.value = (baseDist / Math.max(dist, 0.1)) * 100;
   }
   if (renderer && scene && camera) {
     renderer.render(scene, camera);
@@ -481,6 +490,17 @@ onBeforeUnmount(() => {
     width: 100% !important;
     height: 100% !important;
   }
+}
+
+.zoom-level {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
 }
 
 .control-panel {
