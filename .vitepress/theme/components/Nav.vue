@@ -4,7 +4,14 @@
       <div class="nav-all">
         <!-- 导航栏左侧 -->
         <div class="left-nav">
-    
+          <div
+            v-if="parentUrl"
+            class="back-btn nav-btn"
+            title="返回上级"
+            @click="router.go(withBase(parentUrl))"
+          >
+            <i class="iconfont icon-left" />
+          </div>
           <div class="site-name" @click="router.go(withBase('/'))">
             {{ site.title }}
           </div>
@@ -128,6 +135,15 @@ const router = useRouter();
 const store = mainStore();
 const { scrollData } = storeToRefs(store);
 const { site, theme, frontmatter, page } = useData();
+
+const parentUrl = computed(() => {
+  const path = page.value.relativePath
+  if (!path.startsWith("pages/library/")) return null
+  const segments = path.split("/")
+  if (segments.length < 3) return null
+  if (segments.length === 3) return "/pages/library"
+  return "/" + segments.slice(0, -1).join("/")
+})
 </script>
 
 <style lang="scss" scoped>
@@ -202,6 +218,7 @@ const { site, theme, frontmatter, page } = useData();
       flex-direction: row;
       align-items: center;
       min-width: 200px;
+      gap: 0.25rem;
       .site-name {
         position: relative;
         display: flex;
