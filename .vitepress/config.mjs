@@ -7,6 +7,7 @@ import {
   getAllCategories,
   getAllArchives,
 } from "./theme/utils/getPostData.mjs";
+import { getAllMaterials } from "./theme/utils/getMaterialsData.mjs";
 import { jumpRedirect } from "./theme/utils/commonTools.mjs";
 import { getThemeConfig } from "./init.mjs";
 import markdownConfig from "./theme/utils/markdownConfig.mjs";
@@ -16,6 +17,7 @@ import path from "path";
 
 // 获取全局数据
 const postData = await getAllPosts();
+const materialsData = await getAllMaterials();
 
 // 获取主题配置
 const themeConfig = await getThemeConfig();
@@ -47,6 +49,9 @@ export default withPwa(
       tagsData: getAllType(postData),
       categoriesData: getAllCategories(postData),
       archivesData: getAllArchives(postData),
+      materialsData: materialsData,
+      materialsTagsData: getAllType(materialsData),
+      materialsCategoriesData: getAllCategories(materialsData),
     },
     // markdown
     markdown: {
