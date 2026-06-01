@@ -142,9 +142,9 @@ const zoomText = computed(() => `${Math.round(zoomLevel.value)}%`);
 let initialCamDist = 0;
 
 const compactDefaults = {
-  depth: 1,
-  bevelThickness: 0.2,
-  bevelSize: 0.1,
+  depth: 0.5,
+  bevelThickness: 0.1,
+  bevelSize: 0.05,
   bevelSegments: 2,
 };
 
@@ -337,7 +337,7 @@ const buildMesh = async (svgText) => {
   mesh.receiveShadow = true;
 
   if (props.compact) {
-    mesh.scale.set(0.15, 0.15, 0.15);
+    mesh.scale.set(0.08, 0.08, 0.08);
   }
 
   // Auto-fit camera
