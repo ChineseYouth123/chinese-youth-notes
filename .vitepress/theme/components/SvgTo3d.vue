@@ -1,7 +1,13 @@
 <template>
-  <div ref="containerRef" class="svg-to-3d" :style="{ width, height }">
+  <div ref="containerRef" :class="['svg-to-3d', { compact }]" :style="containerStyle">
     <!-- Upload overlay -->
-    <div v-if="!svgLoaded" class="upload-overlay" @drop.prevent="handleDrop" @dragover.prevent @click="triggerUpload">
+    <div
+      v-if="!compact && !svgLoaded"
+      class="upload-overlay"
+      @drop.prevent="handleDrop"
+      @dragover.prevent
+      @click="triggerUpload"
+    >
       <input ref="fileInput" type="file" accept=".svg" style="display:none" @change="handleFileSelect">
       <div class="upload-hint">
         <span class="upload-icon">
@@ -17,11 +23,11 @@
     </div>
 
     <!-- 3D Canvas -->
-    <div v-show="svgLoaded" ref="canvasRef" class="canvas-container" />
+    <div ref="canvasRef" v-show="canvasReady" class="canvas-container" />
 
     <!-- Control panel -->
     <Transition name="slide-up">
-      <div v-if="svgLoaded" class="control-panel">
+      <div v-if="!compact && svgLoaded" class="control-panel">
         <div class="control-header" @click="panelOpen = !panelOpen">
           <span>{{ t("controls") }}</span>
           <span :class="['arrow', { open: panelOpen }]">
@@ -76,12 +82,16 @@
 <script setup>
 import { useData } from "vitepress";
 
+const DEFAULT_SVG = `<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1780284882594" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1833" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M535.600762 0c206.583873 22.093206 345.986032 118.584889 418.283682 289.515683 72.297651 170.930794 59.201016 340.520635-39.334603 508.810158L1003.68254 905.057524 885.365841 1024l-96.17473-97.202794c-120.758857 82.590476-259.019175 107.796317-414.744381 75.658159-77.568-16.026413-143.059302-43.162413-196.477968-81.444571l-7.078603 5.827047-2.320254-2.519365c0.824889 4.644571 1.300317 9.451683 1.300317 14.336 0 42.772317-33.475048 77.470476-74.776381 77.470476C53.792508 1016.124952 20.31746 981.463365 20.31746 938.654476c0-42.772317 33.475048-77.429841 74.735746-77.429841 6.725079 0 13.21854 0.906159 19.390984 2.596571a392.102603 392.102603 0 0 1-61.163682-92.554158l75.836952-80.225524c83.427556 78.299429 171.771937 126.780952 265.037207 145.448635 93.261206 18.708317 183.300063 5.985524 270.108444-38.204953l-320.182857-335.396571-97.19873 94.996317-134.009905-156.200635 245.170794-243.947682 0.475428 0.353524-1.101206-1.381588c22.653968 9.256635 43.422476 14.457905 62.264889 15.599746l4.091936-0.788317 7.001397-1.852952c25.961651-7.952254 53.613714-22.170413 83.114667-42.650413l-2.832254 1.930159 2.084571-2.917588 75.991365 77.275429-0.154412 0.08127 0.94273 0.979301-120.283429 132.331683 318.610286 338.078476-318.415238-338.074413-0.195048 0.272254 319.553016 339.378794c68.758349-71.444317 80.083302-182.706794 33.946413-333.746794C776.996571 191.605841 681.138794 77.389206 535.600762 0z" p-id="1834" fill="#f6ef37"></path></svg>`;
+
 const props = defineProps({
   width: { type: String, default: "100%" },
   height: { type: String, default: "500px" },
+  compact: { type: Boolean, default: false },
+  defaultSvg: { type: String, default: "" },
 });
 
-const { theme, lang } = useData();
+const { lang } = useData();
 
 const i18n = {
   "zh-CN": {
@@ -120,6 +130,7 @@ const containerRef = ref(null);
 const canvasRef = ref(null);
 const fileInput = ref(null);
 const svgLoaded = ref(false);
+const canvasReady = ref(false);
 const panelOpen = ref(false);
 const autoRotate = ref(true);
 
@@ -128,9 +139,14 @@ const settings = reactive({
   bevelThickness: 1,
   bevelSize: 0.5,
   bevelSegments: 3,
-  color: "#4fc3f7",
+  color: "#f6ef37",
   metalness: 0.3,
   roughness: 0.6,
+});
+
+const containerStyle = computed(() => {
+  if (props.compact) return {};
+  return { width: props.width, height: props.height };
 });
 
 let scene = null;
@@ -145,26 +161,30 @@ const triggerUpload = () => fileInput.value?.click();
 
 const handleFileSelect = (e) => {
   const file = e.target.files?.[0];
-  if (file) loadSvg(file);
+  if (file) loadSvgFromFile(file);
 };
 
 const handleDrop = (e) => {
   const file = e.dataTransfer.files?.[0];
-  if (file) loadSvg(file);
+  if (file) loadSvgFromFile(file);
 };
 
-const loadSvg = async (file) => {
+const loadSvg = async (svgText) => {
+  svgLoaded.value = true;
+  svgSourceText = svgText;
+  await nextTick();
+  await initThree();
+  buildMesh(svgText);
+};
+
+const loadSvgFromFile = async (file) => {
   if (!file.name.endsWith(".svg")) {
     $message?.warning?.(t("uploadSub"));
     return;
   }
   try {
     const text = await file.text();
-    svgLoaded.value = true;
-    svgSourceText = text;
-    await nextTick();
-    await initThree();
-    buildMesh(text);
+    loadSvg(text);
   } catch (err) {
     console.error("SVG load error:", err);
     svgLoaded.value = false;
@@ -178,10 +198,13 @@ const initThree = async () => {
   const container = canvasRef.value;
   if (!container) return;
   const rect = container.parentElement.getBoundingClientRect();
-  const w = rect.width;
-  const h = rect.height;
+  const w = rect.width || 160;
+  const h = rect.height || 160;
 
   scene = new THREE.Scene();
+  if (props.compact) {
+    scene.background = null;
+  }
 
   camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
   camera.position.set(0, 0, 30);
@@ -199,11 +222,13 @@ const initThree = async () => {
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.autoRotate = false;
-  controls.minDistance = 5;
+  controls.minDistance = 3;
   controls.maxDistance = 100;
+  controls.enablePan = !props.compact;
+  controls.enableZoom = !props.compact;
+  controls.rotateSpeed = props.compact ? 0.5 : 1;
   controls.update();
 
-  // Lights
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambientLight);
 
@@ -226,6 +251,7 @@ const initThree = async () => {
   meshGroup = new THREE.Group();
   scene.add(meshGroup);
 
+  canvasReady.value = true;
   animate();
 };
 
@@ -322,7 +348,6 @@ watch(
   { deep: true },
 );
 
-// Debounced rebuild for color/material changes
 let rebuildTimer = null;
 watch(
   () => [settings.color, settings.metalness, settings.roughness],
@@ -341,7 +366,6 @@ watch(
   },
 );
 
-// Resize observer
 let resizeObserver = null;
 onMounted(() => {
   if (!containerRef.value) return;
@@ -350,11 +374,17 @@ onMounted(() => {
     const rect = canvasRef.value.parentElement.getBoundingClientRect();
     const w = rect.width;
     const h = rect.height;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
+    if (w > 0 && h > 0) {
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
   });
   resizeObserver.observe(containerRef.value);
+  // In compact mode, auto-load the default SVG
+  if (props.compact) {
+    loadSvg(props.defaultSvg || DEFAULT_SVG);
+  }
 });
 
 onBeforeUnmount(() => {
@@ -381,6 +411,15 @@ onBeforeUnmount(() => {
   background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   min-height: 300px;
+
+  &.compact {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+  }
 }
 
 .upload-overlay {

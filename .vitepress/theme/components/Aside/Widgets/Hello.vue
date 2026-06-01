@@ -4,7 +4,7 @@
     <span class="tip" @click="changeHello">{{ helloText }}</span>
     <div class="content">
       <div class="site-logo">
-        <Clock />
+        <SvgTo3d compact />
       </div>
       <span class="site-desc" v-html="theme.aside.hello.text" />
     </div>
