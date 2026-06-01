@@ -139,11 +139,12 @@ const autoRotate = ref(true);
 const zoomLevel = ref(100);
 
 const zoomText = computed(() => `${Math.round(zoomLevel.value)}%`);
+let initialCamDist = 0;
 
 const compactDefaults = {
-  depth: 1.5,
-  bevelThickness: 0.3,
-  bevelSize: 0.15,
+  depth: 1,
+  bevelThickness: 0.2,
+  bevelSize: 0.1,
   bevelSegments: 2,
 };
 
@@ -219,7 +220,8 @@ const initThree = async () => {
     scene.background = null;
   }
 
-  camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+  const far = props.compact ? 5000 : 1000;
+  camera = new THREE.PerspectiveCamera(45, w / h, 0.1, far);
   camera.position.set(0, 0, 30);
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -274,8 +276,8 @@ const animate = () => {
     controls.autoRotate = autoRotate.value;
     controls.update();
     const dist = camera.position.distanceTo(controls.target);
-    const baseDist = props.compact ? 7 : 30;
-    zoomLevel.value = (baseDist / Math.max(dist, 0.1)) * 100;
+    const base = initialCamDist || 1;
+    zoomLevel.value = (base / Math.max(dist, 0.1)) * 100;
   }
   if (renderer && scene && camera) {
     renderer.render(scene, camera);
@@ -335,7 +337,7 @@ const buildMesh = async (svgText) => {
   mesh.receiveShadow = true;
 
   if (props.compact) {
-    mesh.scale.set(0.5, 0.5, 0.5);
+    mesh.scale.set(0.15, 0.15, 0.15);
   }
 
   // Auto-fit camera
@@ -348,6 +350,8 @@ const buildMesh = async (svgText) => {
     camera.position.set(0, 0, dist);
     controls.target.set(0, 0, 0);
     controls.update();
+    initialCamDist = camera.position.distanceTo(controls.target);
+    zoomLevel.value = 100;
   }
 
   meshGroup.add(mesh);
