@@ -357,7 +357,10 @@ const buildMesh = async (svgText) => {
       const m = new THREE.Mesh(g, material);
       m.castShadow = !props.compact;
       m.receiveShadow = !props.compact;
-      if (props.compact) m.scale.set(0.08, 0.08, 0.5);
+      if (props.compact) {
+        m.scale.set(0.08, 0.08, 0.5);
+        m.rotation.y = Math.PI;
+      }
       meshGroup.add(m);
       shapeCount++;
     } else if (subCount === 1) {
@@ -367,7 +370,10 @@ const buildMesh = async (svgText) => {
         const m = new THREE.Mesh(g, material);
         m.castShadow = !props.compact;
         m.receiveShadow = !props.compact;
-        if (props.compact) m.scale.set(0.08, 0.08, 0.5);
+        if (props.compact) {
+          m.scale.set(0.08, 0.08, 0.5);
+          m.rotation.y = Math.PI;
+        }
         meshGroup.add(m);
         shapeCount++;
       });
