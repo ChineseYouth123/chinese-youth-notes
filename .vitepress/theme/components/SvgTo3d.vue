@@ -134,11 +134,18 @@ const canvasReady = ref(false);
 const panelOpen = ref(false);
 const autoRotate = ref(true);
 
+const compactDefaults = {
+  depth: 1.5,
+  bevelThickness: 0.3,
+  bevelSize: 0.15,
+  bevelSegments: 2,
+};
+
 const settings = reactive({
-  depth: 5,
-  bevelThickness: 1,
-  bevelSize: 0.5,
-  bevelSegments: 3,
+  depth: props.compact ? compactDefaults.depth : 5,
+  bevelThickness: props.compact ? compactDefaults.bevelThickness : 1,
+  bevelSize: props.compact ? compactDefaults.bevelSize : 0.5,
+  bevelSegments: props.compact ? compactDefaults.bevelSegments : 3,
   color: "#f6ef37",
   metalness: 0.3,
   roughness: 0.6,
@@ -318,11 +325,16 @@ const buildMesh = async (svgText) => {
   mesh.castShadow = true;
   mesh.receiveShadow = true;
 
+  if (props.compact) {
+    mesh.scale.set(0.5, 0.5, 0.5);
+  }
+
   // Auto-fit camera
   const box = new THREE.Box3().setFromObject(mesh);
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
-  const dist = maxDim * 2.5;
+  const camMultiplier = props.compact ? 4 : 2.5;
+  const dist = maxDim * camMultiplier;
   if (dist > 1) {
     camera.position.set(0, 0, dist);
     controls.target.set(0, 0, 0);
