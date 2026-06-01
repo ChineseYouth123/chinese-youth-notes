@@ -193,10 +193,6 @@ onBeforeUnmount(() => {
   }
   &:hover {
     .content {
-      .site-logo {
-        opacity: 0;
-        transform: scale(0);
-      }
       .site-desc {
         opacity: 1;
       }
