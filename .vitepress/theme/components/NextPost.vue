@@ -40,21 +40,25 @@ const nextPostData = ref(null);
 
 // 获取文章
 const getNextPostData = () => {
-  const { postData } = theme.value;
+  const { postData, materialsData } = theme.value;
   const { filePath } = page.value;
-  if (!postData || !filePath) return false;
+  if ((!postData && !materialsData) || !filePath) return false;
+  // 检测是否为资料页
+  const isMaterial = typeof filePath === "string" && filePath.includes("/library/materials/");
+  const data = isMaterial ? materialsData : postData;
+  if (!data) return false;
   // 本篇索引
   const postId = generateId(filePath);
-  const postIndex = postData.findIndex((post) => post.id === postId);
+  const postIndex = data.findIndex((post) => post.id === postId);
   // 是否有下一篇
-  if (postIndex >= 0 && postIndex < postData.length - 1) {
-    nextPostData.value = postData[postIndex + 1];
+  if (postIndex >= 0 && postIndex < data.length - 1) {
+    nextPostData.value = data[postIndex + 1];
     isNextPost.value = true;
     return true;
   }
   // 是否有上一篇
   else if (postIndex > 0) {
-    nextPostData.value = postData[postIndex - 1];
+    nextPostData.value = data[postIndex - 1];
     isNextPost.value = false;
     return true;
   }

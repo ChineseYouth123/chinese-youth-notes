@@ -117,11 +117,32 @@ const postMetaData = computed(() => {
   if (/^\/pages\/library\/materials\/[^/]+$/.test(routePath)) {
     const fileName = routePath.split("/").pop();
     const regularPath = `/pages/library/materials/${encodeURIComponent(fileName)}`;
-    return theme.value.materialsData?.find((item) => item.regularPath === regularPath) || null;
+    const found = theme.value.materialsData?.find((item) => item.regularPath === regularPath);
+    if (found) return found;
+    // fallback: 用 frontmatter 构造基础数据
+    return {
+      title: frontmatter.value.title || fileName,
+      date: frontmatter.value.date ? new Date(frontmatter.value.date).getTime() : null,
+      tags: frontmatter.value.tags || [],
+      categories: frontmatter.value.categories ? (Array.isArray(frontmatter.value.categories) ? frontmatter.value.categories : [frontmatter.value.categories]) : [],
+      description: frontmatter.value.description || "",
+      cover: frontmatter.value.cover || null,
+      regularPath,
+    };
   }
   // 博客文章在 postData 中查找
   const postId = generateId(page.value.relativePath);
-  return theme.value.postData.find((item) => item.id === postId);
+  const found = theme.value.postData.find((item) => item.id === postId);
+  if (found) return found;
+  // fallback: 用 frontmatter 构造
+  return {
+    title: frontmatter.value.title || "未命名文章",
+    date: frontmatter.value.date ? new Date(frontmatter.value.date).getTime() : null,
+    tags: frontmatter.value.tags || [],
+    categories: frontmatter.value.categories ? (Array.isArray(frontmatter.value.categories) ? frontmatter.value.categories : [frontmatter.value.categories]) : [],
+    description: frontmatter.value.description || "",
+    cover: frontmatter.value.cover || null,
+  };
 });
 
 

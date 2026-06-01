@@ -26,14 +26,22 @@ const relatedData = ref(null);
 
 // 获取同一分类的文章
 const getRelatedData = () => {
+  const { filePath } = page.value;
+  const isMaterial = typeof filePath === "string" && filePath.includes("/library/materials/");
   // 分类名
   const catName = frontmatter.value.categories?.[0];
-  // 指定分类数据
-  const postData = theme.value.categoriesData?.[catName]?.articles;
+  // 指定分类数据（资料页使用 materialsCategoriesData，博客使用 categoriesData）
+  const source = isMaterial
+    ? theme.value.materialsCategoriesData?.[catName]?.articles
+    : theme.value.categoriesData?.[catName]?.articles;
+  if (!source) {
+    relatedData.value = null;
+    return;
+  }
   // 本篇索引
-  const postId = generateId(page.value?.filePath);
+  const postId = generateId(filePath);
   // 过滤掉当前文章
-  const filteredPosts = postData.filter((post) => post.id !== postId);
+  const filteredPosts = source.filter((post) => post.id !== postId);
   // 取出两篇文章
   relatedData.value = filteredPosts.slice(0, 2);
   if (relatedData.value.length === 0) {
