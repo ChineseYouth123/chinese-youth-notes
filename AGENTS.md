@@ -41,7 +41,7 @@ npm run format     # Prettier
 ## Content structure
 - `pages/posts/` — blog posts (markdown, frontmatter with `title`, `date`, `tags`, `categories`, `top`, `cover`, `description`)
 - `pages/` — static pages
-- `page-example/` — dynamic route example for pagination (`[num].paths.mjs`)
+- `page/` — dynamic route for home pagination (`[num].paths.mjs`)
 - `public/` — static assets
 
 ## Build & tooling quirks
