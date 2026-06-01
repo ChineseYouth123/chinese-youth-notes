@@ -142,9 +142,9 @@ const zoomText = computed(() => `${Math.round(zoomLevel.value)}%`);
 let initialCamDist = 0;
 
 const compactDefaults = {
-  depth: 3,
-  bevelThickness: 0.3,
-  bevelSize: 0.15,
+  depth: 4,
+  bevelThickness: 0.4,
+  bevelSize: 0.2,
   bevelSegments: 2,
 };
 
@@ -153,9 +153,9 @@ const settings = reactive({
   bevelThickness: props.compact ? compactDefaults.bevelThickness : 1,
   bevelSize: props.compact ? compactDefaults.bevelSize : 0.5,
   bevelSegments: props.compact ? compactDefaults.bevelSegments : 3,
-  color: "#ffd700",
-  metalness: 0.95,
-  roughness: 0.15,
+  color: "#c5a84e",
+  metalness: 0.85,
+  roughness: 0.25,
 });
 
 const containerStyle = computed(() => {
@@ -298,32 +298,6 @@ const buildMesh = async (svgText) => {
   const loader = new SVGLoader();
   const svgData = loader.parse(svgText);
 
-  const shapes = [];
-  svgData.paths.forEach((path) => {
-    const pathShapes = path.toShapes(true);
-    if (pathShapes.length === 2) {
-      const b0 = new THREE.Box2().setFromPoints(pathShapes[0].getPoints(5));
-      const b1 = new THREE.Box2().setFromPoints(pathShapes[1].getPoints(5));
-      if (b0.containsBox(b1)) {
-        pathShapes[0].holes.push(pathShapes[1]);
-        shapes.push(pathShapes[0]);
-      } else if (b1.containsBox(b0)) {
-        pathShapes[1].holes.push(pathShapes[0]);
-        shapes.push(pathShapes[1]);
-      } else {
-        shapes.push(...pathShapes);
-      }
-    } else {
-      pathShapes.forEach((s) => shapes.push(s));
-    }
-  });
-
-  if (!shapes.length) {
-    svgLoaded.value = false;
-    $message?.warning?.("No fill paths found in SVG");
-    return;
-  }
-
   const extrudeSettings = {
     depth: settings.depth,
     bevelEnabled: settings.bevelThickness > 0 || settings.bevelSize > 0,
@@ -332,9 +306,6 @@ const buildMesh = async (svgText) => {
     bevelSegments: Math.max(1, Math.round(settings.bevelSegments)),
     curveSegments: 12,
   };
-
-  const geometry = new THREE.ExtrudeGeometry(shapes, extrudeSettings);
-  geometry.center();
 
   const material = new THREE.MeshPhysicalMaterial({
     color: settings.color,
@@ -348,16 +319,64 @@ const buildMesh = async (svgText) => {
     side: THREE.DoubleSide,
   });
 
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.castShadow = !props.compact;
-  mesh.receiveShadow = !props.compact;
+  let shapeCount = 0;
 
-  if (props.compact) {
-    mesh.scale.set(0.08, 0.08, 0.08);
+  svgData.paths.forEach((path) => {
+    const rawShapes = path.toShapes(true);
+
+    if (rawShapes.length === 2) {
+      const b0 = new THREE.Box2().setFromPoints(rawShapes[0].getPoints(5));
+      const b1 = new THREE.Box2().setFromPoints(rawShapes[1].getPoints(5));
+      let ringShape;
+      if (b0.containsBox(b1)) {
+        ringShape = rawShapes[0];
+        ringShape.holes.push(rawShapes[1]);
+      } else if (b1.containsBox(b0)) {
+        ringShape = rawShapes[1];
+        ringShape.holes.push(rawShapes[0]);
+      } else {
+        rawShapes.forEach((s) => {
+          const g = new THREE.ExtrudeGeometry(s, extrudeSettings);
+          g.center();
+          const m = new THREE.Mesh(g, material);
+          m.castShadow = !props.compact;
+          m.receiveShadow = !props.compact;
+          if (props.compact) m.scale.set(0.08, 0.08, 0.08);
+          meshGroup.add(m);
+          shapeCount++;
+        });
+        return;
+      }
+      const g = new THREE.ExtrudeGeometry(ringShape, extrudeSettings);
+      g.center();
+      const m = new THREE.Mesh(g, material);
+      m.castShadow = !props.compact;
+      m.receiveShadow = !props.compact;
+      if (props.compact) m.scale.set(0.08, 0.08, 0.08);
+      meshGroup.add(m);
+      shapeCount++;
+    } else {
+      rawShapes.forEach((s) => {
+        const g = new THREE.ExtrudeGeometry(s, extrudeSettings);
+        g.center();
+        const m = new THREE.Mesh(g, material);
+        m.castShadow = !props.compact;
+        m.receiveShadow = !props.compact;
+        if (props.compact) m.scale.set(0.08, 0.08, 0.08);
+        meshGroup.add(m);
+        shapeCount++;
+      });
+    }
+  });
+
+  if (!shapeCount) {
+    svgLoaded.value = false;
+    $message?.warning?.("No fill paths found in SVG");
+    return;
   }
 
   // Auto-fit camera
-  const box = new THREE.Box3().setFromObject(mesh);
+  const box = new THREE.Box3().setFromObject(meshGroup);
   const size = box.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
   const camMultiplier = props.compact ? 4 : 2.5;
@@ -369,8 +388,6 @@ const buildMesh = async (svgText) => {
     initialCamDist = camera.position.distanceTo(controls.target);
     zoomLevel.value = 100;
   }
-
-  meshGroup.add(mesh);
 };
 
 const resetCamera = () => {
