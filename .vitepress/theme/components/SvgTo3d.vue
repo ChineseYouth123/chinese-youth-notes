@@ -322,31 +322,36 @@ const buildMesh = async (svgText) => {
   let shapeCount = 0;
 
   svgData.paths.forEach((path) => {
-    const rawShapes = path.toShapes(true);
+    const subCount = path.subPaths?.length ?? 0;
 
-    if (rawShapes.length === 2) {
-      const b0 = new THREE.Box2().setFromPoints(rawShapes[0].getPoints(5));
-      const b1 = new THREE.Box2().setFromPoints(rawShapes[1].getPoints(5));
-      let ringShape;
-      if (b0.containsBox(b1)) {
-        ringShape = rawShapes[0];
-        ringShape.holes.push(rawShapes[1]);
-      } else if (b1.containsBox(b0)) {
-        ringShape = rawShapes[1];
-        ringShape.holes.push(rawShapes[0]);
-      } else {
-        rawShapes.forEach((s) => {
-          const g = new THREE.ExtrudeGeometry(s, extrudeSettings);
-          g.center();
-          const m = new THREE.Mesh(g, material);
-          m.castShadow = !props.compact;
-          m.receiveShadow = !props.compact;
-          if (props.compact) m.scale.set(0.08, 0.08, 0.08);
-          meshGroup.add(m);
-          shapeCount++;
-        });
-        return;
-      }
+    if (subCount >= 2) {
+      // Multi-subpath path → create ring manually
+      const outerBb = new THREE.Box2().setFromPoints(path.subPaths[0].getPoints(64));
+      const innerBb = new THREE.Box2().setFromPoints(path.subPaths[1].getPoints(64));
+      const outerW = outerBb.max.x - outerBb.min.x;
+      const innerW = innerBb.max.x - innerBb.min.x;
+
+      const outerIdx = outerW >= innerW ? 0 : 1;
+      const innerIdx = outerIdx === 0 ? 1 : 0;
+
+      const outerPts = path.subPaths[outerIdx].getPoints(64);
+      const innerPts = path.subPaths[innerIdx].getPoints(64);
+      const outerBox = new THREE.Box2().setFromPoints(outerPts);
+      const innerBox = new THREE.Box2().setFromPoints(innerPts);
+
+      const ox = (outerBox.min.x + outerBox.max.x) / 2;
+      const oy = (outerBox.min.y + outerBox.max.y) / 2;
+      const ix = (innerBox.min.x + innerBox.max.x) / 2;
+      const iy = (innerBox.min.y + innerBox.max.y) / 2;
+      const or = (outerBox.max.x - outerBox.min.x) / 2;
+      const ir = (innerBox.max.x - innerBox.min.x) / 2;
+
+      const ringShape = new THREE.Shape();
+      ringShape.absarc(ox, oy, or, 0, Math.PI * 2, false);
+      const holePath = new THREE.Path();
+      holePath.absarc(ix, iy, ir, 0, Math.PI * 2, true);
+      ringShape.holes.push(holePath);
+
       const g = new THREE.ExtrudeGeometry(ringShape, extrudeSettings);
       g.center();
       const m = new THREE.Mesh(g, material);
@@ -355,8 +360,8 @@ const buildMesh = async (svgText) => {
       if (props.compact) m.scale.set(0.08, 0.08, 0.08);
       meshGroup.add(m);
       shapeCount++;
-    } else {
-      rawShapes.forEach((s) => {
+    } else if (subCount === 1) {
+      path.toShapes(false).forEach((s) => {
         const g = new THREE.ExtrudeGeometry(s, extrudeSettings);
         g.center();
         const m = new THREE.Mesh(g, material);
