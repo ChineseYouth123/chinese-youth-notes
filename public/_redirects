@@ -2,3 +2,6 @@
 /chinese-youth-notes/        /index.html   200
 /chinese-youth-notes         /index.html   200
 /chinese-youth-notes/*       /:splat       200
+
+# Root → sub-path redirect
+/                        /chinese-youth-notes/   301
