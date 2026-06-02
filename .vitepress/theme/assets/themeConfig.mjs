@@ -162,14 +162,15 @@ export const themeConfig = {
         {
           icon: "/images/logo/logo.webp",
           name: "主站",
-          url: "/",
+          url: "https://chineseyouth123.github.io/chinese-youth-notes/",
         },
+        // https://agent-6a1e2ec626a436437--sprightly-khapse-10ce66.netlify.app/
         // 备份博客
-        // {
-        //   icon: "/images/logo/logo.webp",
-        //   name: "博客镜像站",
-        //   url: "https://blog-backup.imsyy.top/",
-        // },
+        {
+          icon: "/images/logo/logo.webp",
+          name: "博客镜像站",
+          url: "https://agent-6a1e2ec626a436437--sprightly-khapse-10ce66.netlify.app/",
+        },
       ],
     },
     {
