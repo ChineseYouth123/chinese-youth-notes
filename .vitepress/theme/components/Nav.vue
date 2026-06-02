@@ -459,7 +459,7 @@ const parentUrl = computed(() => {
       .more-menu {
         position: relative;
         margin-right: 4px;
-        @media (max-width: 512px) {
+        @media (max-width: 768px) {
           display: none;
         }
         .more-card {
