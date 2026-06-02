@@ -1,0 +1,4 @@
+# VitePress cleanUrls support — rewrite base path prefix to actual files
+/chinese-youth-notes/        /index.html   200
+/chinese-youth-notes         /index.html   200
+/chinese-youth-notes/*       /:splat       200
