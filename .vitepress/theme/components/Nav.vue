@@ -106,7 +106,7 @@
                     class="more-link"
                     target="_blank"
                   >
-                    <img class="link-icon" :src="link.icon" :alt="link.name" />
+                    <img class="link-icon" :src="withBase(link.icon)" :alt="link.name" />
                     <span class="link-name">{{ link.name }}</span>
                   </a>
                 </div>
