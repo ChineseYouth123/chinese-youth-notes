@@ -160,17 +160,21 @@ export const themeConfig = {
       name: "博客",
       list: [
         {
-          icon: "/images/logo/logo.webp",
+          icon: "/images/logo/logo.png",
           name: "主站",
           url: "https://chineseyouth123.github.io/chinese-youth-notes/",
         },
-        // https://agent-6a1e2ec626a436437--sprightly-khapse-10ce66.netlify.app/
         // 备份博客
-        {
-          icon: "/images/logo/logo.webp",
-          name: "博客镜像站",
-          url: "https://agent-6a1e2ec626a436437--sprightly-khapse-10ce66.netlify.app/",
-        },
+        // {
+        //   icon: "/images/logo/logo.png",
+        //   name: "镜像站-加速",
+        //   url: ""
+        // },
+        // {
+        //   icon: "/images/logo/daohang.png",
+        //   name: "导航站",
+        //   url: ""
+        // },
       ],
     },
     {
