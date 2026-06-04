@@ -160,15 +160,20 @@ export const themeConfig = {
       name: "博客",
       list: [
         {
-          icon: "/images/logo/logo.webp",
+          icon: "/images/logo/logo.png",
           name: "主站",
-          url: "/",
+          url: "https://chineseyouth123.github.io/chinese-youth-notes/",
         },
         // 备份博客
         // {
-        //   icon: "/images/logo/logo.webp",
-        //   name: "博客镜像站",
-        //   url: "https://blog-backup.imsyy.top/",
+        //   icon: "/images/logo/logo.png",
+        //   name: "镜像站-加速",
+        //   url: ""
+        // },
+        // {
+        //   icon: "/images/logo/daohang.png",
+        //   name: "导航站",
+        //   url: ""
         // },
       ],
     },
