@@ -28,7 +28,7 @@ const themeConfig = await getThemeConfig();
 // https://vitepress.dev/reference/site-config
 export default withPwa(
   defineConfig({
-    base: "/chinese-youth-notes/",
+    base: "/",
     title: themeConfig.siteMeta.title,
     description: themeConfig.siteMeta.description,
     lang: themeConfig.siteMeta.lang,
