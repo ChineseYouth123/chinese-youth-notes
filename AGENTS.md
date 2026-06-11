@@ -13,6 +13,13 @@
 git add . && git commit -m "feat: ..." && git push
 ```
 
+## ⚠️ 永久记忆：git 提交前先运行 douyinUrl.js
+每次 git 提交前，先进入 pages 子模块运行：
+```bash
+node douyinUrl.js posts/2026/
+```
+然后再 git add/commit/push。
+
 ## Quick start
 ```bash
 npm run dev        # dev server on port 9877
