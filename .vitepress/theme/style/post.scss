@@ -431,6 +431,7 @@
     width: 100%;
     overflow: hidden;
     padding: 0.5rem 0;
+    position: relative;
   }
   .mobile-table-track {
     display: flex;
@@ -438,28 +439,34 @@
   }
   .mobile-table-card {
     min-width: 100%;
-    padding: 1rem;
+    padding: 1.2rem;
     background: var(--main-card-background);
     border: 1px solid var(--main-card-border);
     border-radius: 12px;
     box-sizing: border-box;
     user-select: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s;
   }
   .mobile-table-field {
     display: flex;
     flex-direction: column;
-    padding: 0.5rem 0;
+    padding: 0.45rem 0;
     border-bottom: 1px dashed var(--main-card-border);
+    &:first-child {
+      padding-top: 0;
+    }
     &:last-child {
       border-bottom: none;
     }
   }
   .mobile-table-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: var(--main-color);
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.1rem;
     line-height: 1.4;
+    opacity: 0.85;
   }
   .mobile-table-value {
     font-size: 0.9rem;
@@ -488,6 +495,17 @@
       width: 24px;
       border-radius: 4px;
     }
+  }
+  .mobile-table-page {
+    position: absolute;
+    bottom: 6px;
+    right: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--main-font-color);
+    opacity: 0.4;
+    user-select: none;
+    pointer-events: none;
   }
   // default: mobile → cards, desktop → table
   @media (max-width: 768px) {

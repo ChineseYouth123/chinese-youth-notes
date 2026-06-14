@@ -69,7 +69,10 @@ function enhanceTable(container) {
     dot.className = "mobile-table-dot"
     dots.appendChild(dot)
   }
-  cardsEl.appendChild(dots)
+  const pageEl = document.createElement("div")
+  pageEl.className = "mobile-table-page"
+  pageEl.textContent = `1/${rows.length}`
+  cardsEl.appendChild(pageEl)
 
   container.appendChild(cardsEl)
 
@@ -109,6 +112,8 @@ function setupSwipe(cardsEl, total) {
     track.style.transition = "transform 0.3s ease"
     track.style.transform = `translateX(-${index * 100}%)`
     dots.querySelectorAll(".mobile-table-dot").forEach((d, i) => d.classList.toggle("active", i === index))
+    const pageEl = cardsEl.querySelector(".mobile-table-page")
+    if (pageEl) pageEl.textContent = `${index + 1}/${total}`
   }
 
   track.addEventListener("touchstart", (e) => {
