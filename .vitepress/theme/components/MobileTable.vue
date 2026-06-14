@@ -69,6 +69,7 @@ function enhanceTable(container) {
     dot.className = "mobile-table-dot"
     dots.appendChild(dot)
   }
+  cardsEl.appendChild(dots)
   const pageEl = document.createElement("div")
   pageEl.className = "mobile-table-page"
   pageEl.textContent = `1/${rows.length}`
