@@ -21,6 +21,7 @@ const postData = await getAllPosts();
 const materialsData = await getAllMaterials();
 const maozedongData = await getLibraryData("maozedong");
 const redBooksData = await getLibraryData("red-books");
+const mailboxData = await getLibraryData("", "pages/mailbox");
 
 // 获取主题配置
 const themeConfig = await getThemeConfig();
@@ -57,6 +58,7 @@ export default withPwa(
       materialsCategoriesData: getAllCategories(materialsData),
       maozedongData: maozedongData,
       redBooksData: redBooksData,
+      mailboxData: mailboxData,
     },
     // markdown
     markdown: {
@@ -80,9 +82,10 @@ export default withPwa(
         pageData.frontmatter.head ??= [];
         pageData.frontmatter.head.push(["link", { rel: "canonical", href: canonicalUrl }]);
       }
-      // 为 pages/library/ 下的内容页自动启用文章预览样式
+      // 为 pages/library/ 和 pages/mailbox/ 下的内容页自动启用文章预览样式
       if (
-        pageData.relativePath.startsWith("pages/library/")
+        (pageData.relativePath.startsWith("pages/library/")
+        || pageData.relativePath.startsWith("pages/mailbox/"))
         && !pageData.relativePath.includes("[")
       ) {
         const segments = pageData.relativePath.split("/");

@@ -130,6 +130,13 @@ export const themeConfig = {
         { text: "资料", link: "/pages/library/materials", icon: "article" },
       ],
     },
+    {
+      text: "信箱",
+      items: [
+        { text: "信箱首页", link: "/pages/mailbox", icon: "mailbox" },
+        { text: "所有文件", link: "/pages/mailbox/mailbox", icon: "article" },
+      ],
+    },
     // {
     //   text: "专栏",
     //   items: [
@@ -320,6 +327,13 @@ export const themeConfig = {
           { text: "毛泽东", link: "/pages/library/maozedong" },
           { text: "红色书籍", link: "/pages/library/red-books" },
           { text: "资料", link: "/pages/library/materials" },
+        ],
+      },
+      {
+        text: "信箱",
+        items: [
+          { text: "信箱首页", link: "/pages/mailbox" },
+          { text: "所有文件", link: "/pages/mailbox/mailbox" },
         ],
       },
       {
