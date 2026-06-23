@@ -99,29 +99,15 @@
     // 超链接
     a {
       position: relative;
-      display: inline-flex;
+      display: inline;
       color: var(--main-color);
-      &::before {
-        content: "";
-        position: absolute;
-        border-radius: 2px;
-        bottom: 2px;
-        left: 0;
-        right: 0;
-        height: 1px;
-        opacity: 0.8;
-        background-color: var(--main-color);
-        border-radius: 4px;
-        transition: all 0.3s;
-      }
+      background: linear-gradient(var(--main-color), var(--main-color)) no-repeat;
+      background-size: 100% 1px;
+      background-position: 0 calc(100% - 2px);
+      transition: background-size 0.3s;
       &:hover {
-        &::before {
-          height: 100%;
-          opacity: 0.2;
-          bottom: 0;
-          left: -2px;
-          right: -2px;
-        }
+        background-size: 100% 100%;
+        background-image: linear-gradient(color-mix(in srgb, var(--main-color) 20%, transparent), color-mix(in srgb, var(--main-color) 20%, transparent));
       }
     }
     // 重点
