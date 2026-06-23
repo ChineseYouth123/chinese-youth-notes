@@ -463,7 +463,7 @@ export const themeConfig = {
   },
   // 外链中转
   jumpRedirect: {
-    enable: true,
+    enable: false,
     // 排除类名
     exclude: [
       "cf-friends-link",
