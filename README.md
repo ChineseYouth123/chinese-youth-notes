@@ -73,6 +73,16 @@ git add pages && git commit -m "chore: update pages submodule"
 git push
 ```
 
+### 一键部署
+
+`scripts/` 提供了自动化部署脚本，功能：更新抖音链接 → 提交 pages 子模块 → 更新主仓库 submodule 引用。
+
+| 脚本 | 平台 | 运行方式 |
+|---|---|---|
+| `scripts/deploy.sh` | macOS / Linux / Windows (Git Bash) | `bash scripts/deploy.sh` |
+| `scripts/deploy.ps1` | Windows PowerShell | `powershell -File scripts/deploy.ps1` |
+| `scripts/deploy.bat` | Windows CMD | `scripts\deploy.bat` 或双击 |
+
 ## 功能特性
 
 - **Markdown 扩展** — 自定义容器（时间线、卡片、按钮等）、Obsidian 风格提示块、标签页、数学公式、图片灯箱
