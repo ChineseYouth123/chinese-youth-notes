@@ -2,6 +2,10 @@
 # deploy.sh — 跨平台部署脚本（macOS / Linux / Windows Git Bash）
 set -euo pipefail
 
+# 加载 nvm（非交互式 shell 不会自动加载 ~/.bashrc）
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 PAGES_DIR="$ROOT_DIR/pages"
 
@@ -21,7 +25,7 @@ node "$ROOT_DIR/douyinUrl.js" "$PAGES_DIR/posts/2026/"
 # 2. 提交 pages 子模块
 echo ""
 echo "🔄 [2/4] 提交 pages 子模块..."
-if [ ! -d "$PAGES_DIR/.git" ]; then
+if [ ! -e "$PAGES_DIR/.git" ]; then
   echo "⚠️  警告: '$PAGES_DIR' 不是 git 仓库，跳过..."
 else
   git -C "$PAGES_DIR" add .
