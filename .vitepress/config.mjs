@@ -9,6 +9,7 @@ import {
 } from "./theme/utils/getPostData.mjs";
 import { getAllMaterials } from "./theme/utils/getMaterialsData.mjs";
 import { getLibraryData } from "./theme/utils/getLibraryData.mjs";
+import { getCategoriesFiles } from "./theme/utils/getCategoriesFiles.mjs";
 import { jumpRedirect } from "./theme/utils/commonTools.mjs";
 import { getThemeConfig } from "./init.mjs";
 import markdownConfig from "./theme/utils/markdownConfig.mjs";
@@ -22,6 +23,7 @@ const materialsData = await getAllMaterials();
 const maozedongData = await getLibraryData("maozedong");
 const redBooksData = await getLibraryData("red-books");
 const mailboxData = await getLibraryData("", "pages/mailbox");
+const categoriesFilesData = await getCategoriesFiles();
 
 // 获取主题配置
 const themeConfig = await getThemeConfig();
@@ -59,6 +61,7 @@ export default withPwa(
       maozedongData: maozedongData,
       redBooksData: redBooksData,
       mailboxData: mailboxData,
+      categoriesFilesData: categoriesFilesData,
     },
     // markdown
     markdown: {
