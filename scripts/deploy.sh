@@ -27,9 +27,10 @@ if [ ! -f "$ROOT_DIR/douyinUrl.js" ]; then
 fi
 node "$ROOT_DIR/douyinUrl.js" "$PAGES_DIR/posts/2026/"
 
-# 2. 自动打包
+# 2. 自动打包（先生成统计数据）
 echo ""
-echo "🔄 [2/5] 打包网站..."
+echo "🔄 [2/5] 生成统计数据 & 打包网站..."
+node "$ROOT_DIR/scripts/generate-stats.mjs"
 npm --prefix "$ROOT_DIR" run build
 
 # 3. 本地同步部署（nginx）
