@@ -9,16 +9,72 @@ const __dirname = path.dirname(__filename);
 
 /**
  * 解析 Markdown 表格行 → 数组
+ * 支持单元格内转义的 `\|`（不会误拆列），返回的单元格内容已还原为字面 `|`
  */
 function parseTableRow(row) {
-  return row.trim().replace(/^\||\|$/g, '').split('|').map(cell => cell.trim());
+  return row.trim()
+    .replace(/^\||\|$/g, '')
+    .split(/(?<!\\)\|/)
+    .map(cell => cell.trim().replace(/\\\|/g, '|'));
 }
 
 /**
  * 重建 Markdown 表格行
+ * 单元格内字面 `|` 一律转义为 `\|`，保证表格结构不被破坏
  */
 function buildTableRow(cells) {
-  return '| ' + cells.map(c => c.trim()).join(' | ') + ' |';
+  return '| ' + cells.map(c => c.trim().replace(/\|/g, '\\|')).join(' | ') + ' |';
+}
+
+/**
+ * 判断单元格是否为“干净”的抖音短链接（整格仅一个链接，无多余文字）
+ */
+function findCleanDouyinUrlCells(cells) {
+  const re = /^https?:\/\/v\.douyin\.com\/[A-Za-z0-9_-]+\/?$/;
+  const idxs = [];
+  cells.forEach((c, i) => {
+    if (re.test(c.trim())) idxs.push(i);
+  });
+  return idxs;
+}
+
+/**
+ * 修复因单元格内含字面 `|` 而错位的数据行。
+ * 错位后单元格数多于表头（每个 `|` 多拆一列），列序为：
+ * [序号, 分类, 标题…(被拆开), 链接, 完整链接…(被拆开)]
+ * 通过唯一“干净短链”单元格定位 链接 列，再向两侧拼回标题与完整链接。
+ * 修复失败返回 null（例如源列缺失/链接被截断，无法还原）。
+ */
+function repairMisalignedRow(rowCells, headers) {
+  const m = headers.length;
+  const n = rowCells.length;
+  // 仅支持标准 5 列表（序号 | 分类 | url标题 | 链接 | 完整链接）的错位修复
+  if (m !== 5) return null;
+  // 只有“多拆出来列”的行才是错位行；占位/空行不处理
+  if (n <= m) return null;
+
+  const urlIdxs = findCleanDouyinUrlCells(rowCells);
+  // 必须恰好定位到一个干净的链接单元格，否则无法确定列边界
+  if (urlIdxs.length !== 1) return null;
+
+  const li = urlIdxs[0];
+  if (li < 2) return null;
+
+  // 第 2 列应为 分类列：未分类/空 或含 <code> 标签
+  const cat = (rowCells[1] || '').trim();
+  const catOk = cat === '' || cat === '未分类' || cat.includes('<code>');
+  if (!catOk) return null;
+
+  const repaired = new Array(m).fill('');
+  repaired[0] = (rowCells[0] || '').trim();                    // 序号
+  repaired[1] = cat;                                          // 分类
+  repaired[2] = rowCells.slice(2, li)                          // 标题（还原被拆开的 |）
+    .map((c) => c.trim()).join(' | ');
+  repaired[3] = rowCells[li].trim();                           // 链接
+  repaired[4] = rowCells.slice(li + 1)                         // 完整链接（还原被拆开的 |）
+    .map((c) => c.trim()).join(' | ');
+
+  return repaired;
 }
 
 /**
@@ -79,11 +135,20 @@ function extractCleanTitle(text) {
   let title = titleMatch ? titleMatch[1] : '';
 
   // 清理头尾非文字/数字的噪音（保留任意语言的文字与数字）
-  title = title
-    .replace(/^[^\p{L}\p{N}_]+/u, '')
-    .replace(/[^\p{L}\p{N}_]+$/u, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  // 尾部的闭合括号若与内容中的左括号配对则保留（避免 `…（视频编辑：冯杨）` 被截成 `…（视频编辑：冯杨`）
+  title = title.replace(/^[^\p{L}\p{N}_]+/u, '');
+  title = title.replace(/[^\p{L}\p{N}_]+$/u, (m) => {
+    const lead = m.trimEnd();
+    if (!lead) return '';
+    const closer = lead.slice(-1);
+    const openers = { '）': '（', '】': '【', '」': '「', '〉': '〈', '》': '《', '>': '<', ']': '[', '}': '{' };
+    const opener = openers[closer];
+    if (opener && title.slice(0, title.length - m.length).includes(opener)) {
+      return closer;
+    }
+    return '';
+  });
+  title = title.replace(/\s+/g, ' ').trim();
 
   return title;
 }
@@ -109,8 +174,16 @@ function extractDouyinInfo(text) {
   if (!shortLink) return null;
 
   // 2. 提取 #标签
-  const tagRegex = /#\s*([^\s#]+)/g;
-  const tags = [...text.matchAll(tagRegex)].map(m => m[1].trim());
+  //    - 标签不跨 `|`（分享文本常用 `#话题|描述` 分隔）
+  //    - 含逗号/句号等语句标点，或 `！？` 出现在非结尾处的片段实为描述而非标签，剔除
+  const tagRegex = /#\s*([^\s#|]+)/g;
+  const hasJunkPunct = (t) => (
+    /[，。；、…：]/.test(t)
+    || /[！？]/.test(t.slice(0, -1))
+  );
+  const tags = [...text.matchAll(tagRegex)]
+    .map(m => m[1].trim())
+    .filter(t => t && !hasJunkPunct(t) && !/^https?:\/\//i.test(t));
   const categoryHtml = tags.length > 0
     ? tags.map(t => `<code>${t}</code>`).join(' ')
     : '未分类';
@@ -188,8 +261,13 @@ function findAllTables(content) {
         if (cells.length === headers.length) {
           const rowObj = {};
           headers.forEach((h, idx) => rowObj[h.trim()] = cells[idx] || '');
-          rowObj._lineIndex = j;       
-          rowObj._cells = cells;       
+          rowObj._lineIndex = j;
+          rowObj._cells = cells;
+          rowObj._misaligned = false;
+          tableRows.push(rowObj);
+        } else if (cells.length > headers.length) {
+          // 单元格内含字面 `|` 导致的错位行：先记录，交给 repairMisalignedRow 尝试还原
+          const rowObj = { _lineIndex: j, _cells: cells, _misaligned: true };
           tableRows.push(rowObj);
         }
       }
@@ -322,6 +400,15 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
     let currentSeq = 1; // 序号计数器
 
     for (const row of rows) {
+      // 处理因字面 `|` 错位的行：尝试还原为标准列结构，失败则跳过该行
+      if (row._misaligned) {
+        const repaired = repairMisalignedRow(row._cells, headers);
+        if (!repaired) continue;
+        row._cells = repaired;
+        row._misaligned = false;
+        headers.forEach((h, idx) => { row[h] = repaired[idx] || ''; });
+      }
+
       // 获取源文本
       // 注意：row._cells 是解析时的旧数据。如果表结构变了（加了列），row._cells 长度不对。
       // 最安全的方式：直接从 bodyLines 重新解析该行，或者依赖 row._cells 并在输出时修正。
@@ -362,11 +449,19 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
       // 注意：如果 offset=1，目标列的物理索引也要 +1
       for (const [targetHeader, fieldKey] of Object.entries(cfg.targetCols)) {
         const targetIdxInHeader = headers.indexOf(targetHeader);
-        if (targetIdxInHeader !== -1 && info[fieldKey]) {
-          const actualTargetIdx = targetIdxInHeader + offset;
+        if (targetIdxInHeader === -1) continue;
+        const actualTargetIdx = targetIdxInHeader + offset;
+        const existingVal = actualTargetIdx < newCells.length ? (newCells[actualTargetIdx] || '') : '';
+
+        // 保护人工/既有标题：源里没有可提取标题时不覆盖已有非空标题
+        if (fieldKey === 'title' && info.title === '无标题' && existingVal.trim()) {
+          continue;
+        }
+
+        if (info[fieldKey]) {
           // 确保数组长度足够（防止越界，虽然理论上应该一致）
           if (actualTargetIdx < newCells.length) {
-             newCells[actualTargetIdx] = info[fieldKey];
+            newCells[actualTargetIdx] = info[fieldKey];
           }
         }
       }
