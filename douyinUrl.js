@@ -22,6 +22,80 @@ function buildTableRow(cells) {
 }
 
 /**
+ * 抖音分享文本前缀中的“噪音” token（时间/日期/分享码/@提及等）
+ * 这些 token 不含汉字，不属于标题内容。
+ */
+const NOISE_TOKEN = /^(?::\d+[ap]m|\d{1,2}\/\d{1,2}|[A-Za-z0-9]{1,5}[:@][A-Za-z0-9@.:/\-]{1,8}|#|[:@/]+|[\u3000-\u303F\uFF00-\uFFEF\u2010-\u2027\u2018\u2019\u201C\u201D#@:/]+)$/i;
+
+/**
+ * 判断 token 是否为分享码噪音（应被丢弃）
+ */
+function isNoiseToken(token) {
+  if (!token) return true;
+  return NOISE_TOKEN.test(token) || /^@\S+$/.test(token);
+}
+
+/**
+ * 判断 token 是否含有“有意义”内容（任意文字字符、汉字或 emoji，可作为标题起点）
+ */
+function isMeaningfulToken(token) {
+  return /\p{L}/u.test(token) || /\p{Extended_Pictographic}/u.test(token);
+}
+
+/**
+ * 从抖音分享文本中精准提取纯净标题
+ *  1. 去掉尾随噪音（复制提示、短链接）
+ *  2. 去掉开头的版本号（如 8.20）
+ *  3. 丢弃分享码噪音 token，直到首个有意义 token（汉字/emoji/常规词）
+ *  4. 截取到首个 # 之前作为标题
+ */
+function extractCleanTitle(text) {
+  if (!text) return '';
+
+  let core = text
+    .replace(/\s*复制此链接[\s\S]*$/, '')
+    .replace(/https?:\/\/v\.douyin\.com\/[^\s]*/g, ' ')
+    .trim();
+
+  core = core.replace(/^\s*\d+\.\d+\s*/, ' ').trim();
+
+  const tokens = core.split(/\s+/);
+  let begin = 0;
+  while (begin < tokens.length) {
+    const token = tokens[begin];
+    // 先丢弃明确的分享码噪音 token（时间/日期/分享码/@提及/纯标点等）
+    if (isNoiseToken(token)) {
+      begin++;
+      continue;
+    }
+    // 遇到首个“有意义”token（文字/汉字/emoji）即视为标题起点
+    if (isMeaningfulToken(token)) break;
+    // 纯数字等既非噪音也非文字的内容（如 “2024 年度”），同样视为标题起点
+    break;
+  }
+  core = tokens.slice(begin).join(' ').trim();
+
+  const titleMatch = core.match(/^([\s\S]*?)(?=\s*#|$)/);
+  let title = titleMatch ? titleMatch[1] : '';
+
+  // 清理头尾非文字/数字的噪音（保留任意语言的文字与数字）
+  title = title
+    .replace(/^[^\p{L}\p{N}_]+/u, '')
+    .replace(/[^\p{L}\p{N}_]+$/u, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return title;
+}
+
+/**
+ * 截断超长行，便于 dry-run 预览输出
+ */
+function truncateLine(line, maxLen = 120) {
+  return line.length > maxLen ? `${line.slice(0, maxLen)}...` : line;
+}
+
+/**
  * 🔥 核心优化：精准提取抖音信息
  */
 function extractDouyinInfo(text) {
@@ -42,22 +116,13 @@ function extractDouyinInfo(text) {
     : '未分类';
 
   // 3. 精准提取纯净标题
-  const titleMatch = text.match(/([\u4e00-\u9fa5][\s\S]*?)(?=\s*#|\s*https?|$)/);
-  let title = titleMatch ? titleMatch[1].trim() : '';
-
-  // 清理噪声
-  title = title
-    .replace(/复制此链接.*$/g, '')
-    .replace(/^[^\u4e00-\u9fa5\w]+/, '') 
-    .replace(/[^\u4e00-\u9fa5\w]+$/, '') 
-    .replace(/\s+/g, ' ')
-    .trim();
+  let title = extractCleanTitle(text);
 
   // 智能截断
   if (title.length > 40) {
     const punctIdx = title.search(/[，。！？、]/);
-    title = punctIdx > 0 && punctIdx < 40 
-      ? title.slice(0, punctIdx + 1) 
+    title = punctIdx > 0 && punctIdx < 40
+      ? title.slice(0, punctIdx + 1)
       : title.slice(0, 40) + '...';
   }
 
@@ -164,6 +229,7 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
   };
   
   const cfg = { ...defaultConfig, ...config };
+  const dryRun = !!cfg.dryRun;
   
   if (!fs.existsSync(filePath)) {
     console.error(`❌ 文件不存在: ${filePath}`);
@@ -182,6 +248,7 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
   }
   
   let totalFilledCount = 0;
+  const changes = [];
   const bodyLines = body.split('\n'); 
 
   // 2. 遍历每个表格
@@ -196,7 +263,15 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
     if (!hasSeqCol && cfg.addSeqIfMissing) {
       // 1. 修改表头：在最前面插入 "序号"
       const newHeaders = [cfg.seqCol, ...headers];
+      const oldHeaderLine = bodyLines[table.startLineIndex];
       bodyLines[table.startLineIndex] = buildTableRow(newHeaders);
+      if (oldHeaderLine !== bodyLines[table.startLineIndex]) {
+        changes.push({
+          line: table.startLineIndex,
+          oldLine: oldHeaderLine,
+          newLine: bodyLines[table.startLineIndex]
+        });
+      }
       
       // 2. 修改分隔线：在最前面插入 "---"
       // 找到对应的分隔线行 (startLineIndex + 1)
@@ -204,7 +279,15 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
       if (sepLineIdx < bodyLines.length && isSeparatorLine(bodyLines[sepLineIdx])) {
          const oldSepCells = parseTableRow(bodyLines[sepLineIdx]);
          const newSepCells = ['---', ...oldSepCells];
+         const oldSepLine = bodyLines[sepLineIdx];
          bodyLines[sepLineIdx] = buildTableRow(newSepCells);
+         if (oldSepLine !== bodyLines[sepLineIdx]) {
+           changes.push({
+             line: sepLineIdx,
+             oldLine: oldSepLine,
+             newLine: bodyLines[sepLineIdx]
+           });
+         }
       }
 
       // 3. 更新内存中的 headers 引用，以便后续逻辑使用新的索引
@@ -253,15 +336,14 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
       }
 
       if (!fullText.trim()) {
-        currentSeq++; // 即使空行也占一个序号？通常不需要，看需求。这里假设空行不计数或保持原样。
-        // 如果希望空行也有序号，取消下面的 continue 前的 currentSeq++ 逻辑调整
-        continue; 
+        // 空行不参与序号计数，保持原样
+        continue;
       }
 
       const info = extractDouyinInfo(fullText);
       if (!info) {
-        currentSeq++;
-        continue; 
+        // 无法提取抖音信息的行不参与序号计数，保持原样
+        continue;
       }
 
       // 构建新行单元格
@@ -290,7 +372,11 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
       }
 
       // 4. 更新行
+      const oldLine = bodyLines[row._lineIndex];
       bodyLines[row._lineIndex] = buildTableRow(newCells);
+      if (oldLine !== bodyLines[row._lineIndex]) {
+        changes.push({ line: row._lineIndex, oldLine, newLine: bodyLines[row._lineIndex] });
+      }
       
       tableFilledCount++;
       currentSeq++;
@@ -310,9 +396,12 @@ function fillBlogTable(filePath, outputPath = null, config = {}) {
   });
 
   const targetPath = outputPath || filePath; // 默认覆盖原文件，或者你可以改为 .filled.md
+  if (dryRun) {
+    return { filledCount: totalFilledCount, outputPath: targetPath, dryRun: true, changes };
+  }
   fs.writeFileSync(targetPath, newContent, 'utf-8');
   
-  return { filledCount: totalFilledCount, outputPath: targetPath };
+  return { filledCount: totalFilledCount, outputPath: targetPath, dryRun: false, changes };
 }
 
 /**
@@ -339,8 +428,11 @@ function getAllMdFiles(dirPath, arrayOfFiles = []) {
  * 主入口：处理文件或文件夹
  */
 function main() {
-  const targetPath = process.argv[2] || './blogs'; // 默认当前目录下的 blogs 文件夹或文件
-  const customOutputDir = process.argv[3]; // 可选：指定输出目录，如果不指定则覆盖原文件
+  const rawArgs = process.argv.slice(2);
+  const dryRun = rawArgs.includes('--dry-run') || rawArgs.includes('-n');
+  const args = rawArgs.filter((a) => a !== '--dry-run' && a !== '-n');
+  const targetPath = args[0] || './blogs'; // 默认当前目录下的 blogs 文件夹或文件
+  const customOutputDir = args[1]; // 可选：指定输出目录，如果不指定则覆盖原文件
 
   if (!fs.existsSync(targetPath)) {
     console.error(`❌ 路径不存在: ${targetPath}`);
@@ -367,6 +459,7 @@ function main() {
   let totalGlobalFilled = 0;
   let successCount = 0;
   let skipCount = 0;
+  let totalChanges = 0;
 
   filesToProcess.forEach((filePath, index) => {
     console.log(`[${index + 1}/${filesToProcess.length}] 处理: ${path.basename(filePath)}`);
@@ -381,11 +474,24 @@ function main() {
     }
 
     try {
-      const result = fillBlogTable(filePath, outPath);
+      const result = fillBlogTable(filePath, outPath, { dryRun });
       if (result && !result.skipped) {
         totalGlobalFilled += result.filledCount;
         successCount++;
         console.log(`   ✅ 完成: 填充 ${result.filledCount} 行\n`);
+        if (result.dryRun) {
+          totalChanges += result.changes.length;
+          if (result.changes.length === 0) {
+            console.log('   • 无变更\n');
+          } else {
+            console.log(`   💡 dry-run 预览: ${result.changes.length} 行将变化`);
+            result.changes.forEach((c) => {
+              console.log(`      L${c.line + 1} 旧: ${truncateLine(c.oldLine)}`);
+              console.log(`         新: ${truncateLine(c.newLine)}`);
+            });
+            console.log('');
+          }
+        }
       } else {
         skipCount++;
         console.log(`   ⏭️  跳过: 无有效数据或表格\n`);
@@ -399,7 +505,9 @@ function main() {
   console.log(`🎉 全部任务结束！`);
   console.log(`📊 统计: 成功 ${successCount} 个文件, 跳过 ${skipCount} 个文件`);
   console.log(`📝 总共填充行数: ${totalGlobalFilled}`);
-  if (customOutputDir) {
+  if (dryRun) {
+    console.log(`💡 DRY-RUN 模式: 未写入任何文件（将变更 ${totalChanges} 行）`);
+  } else if (customOutputDir) {
     console.log(`💾 输出目录: ${customOutputDir}`);
   } else {
     console.log(`💾 模式: 覆盖原文件`);
