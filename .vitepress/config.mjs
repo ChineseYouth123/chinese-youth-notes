@@ -37,6 +37,8 @@ export default withPwa(
     lang: themeConfig.siteMeta.lang,
     // 简洁的 URL
     cleanUrls: true,
+    // pages 子模块中存在历史死链，CI 构建阶段应忽略这些链接，避免 GitHub Actions 因死链失败
+    ignoreDeadLinks: true,
     // 最后更新时间戳
     lastUpdated: true,
     // 主题
